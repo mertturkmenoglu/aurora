@@ -1,0 +1,3 @@
+setup:
+  project: aurora
+  config: dev
