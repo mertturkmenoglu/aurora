@@ -6,4 +6,5 @@ func Bootstrap(router *gin.Engine) {
 	app := router.Group("/v1")
 
 	app.GET("/test", GetTestData)
+	app.GET("/aws", GetAwsDummyS3Data)
 }
