@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
+	"unicode"
 )
 
 func doesUserExist(email string) (bool, error) {
@@ -23,11 +24,39 @@ func doesUserExist(email string) (bool, error) {
 	return true, nil
 }
 
+func customPasswordCheck(password string) bool {
+	hasUpper := false
+	hasLower := false
+
+	for _, char := range password {
+		if unicode.IsUpper(char) {
+			hasUpper = true
+		}
+		if unicode.IsLower(char) {
+			hasLower = true
+		}
+		if hasLower && hasUpper {
+			break
+		}
+	}
+
+	return hasUpper && hasLower
+}
+
 func RegisterUser(c *gin.Context) {
 	var body RegisterDto
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+		})
+		return
+	}
+
+	hadPassedCustomPasswordCheck := customPasswordCheck(body.Password)
+
+	if !hadPassedCustomPasswordCheck {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Validation failed for password field",
 		})
 		return
 	}
