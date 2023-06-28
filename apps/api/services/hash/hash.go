@@ -1,4 +1,4 @@
-package auth
+package hash
 
 import (
 	"crypto/rand"
@@ -34,7 +34,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return arr, nil
 }
 
-func hashPassword(password string) (string, error) {
+func HashPassword(password string) (string, error) {
 	salt, err := generateRandomBytes(saltLength)
 
 	if err != nil {
@@ -51,7 +51,7 @@ func hashPassword(password string) (string, error) {
 	return encodedHash, nil
 }
 
-func verifyPassword(plainPassword string, hashedPassword string) (bool, error) {
+func VerifyPassword(plainPassword string, hashedPassword string) (bool, error) {
 	salt, hash, err := decodeHashedPassword(hashedPassword)
 
 	if err != nil {

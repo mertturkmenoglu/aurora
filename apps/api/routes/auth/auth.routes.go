@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"aurora/services/hash"
+	"aurora/services/jwt"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -46,7 +49,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := hashPassword(body.Password)
+	hashedPassword, err := hash.HashPassword(body.Password)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -115,7 +118,7 @@ func LoginUser(c *gin.Context) {
 	plainPassword := body.Password
 	hashedPassword := authResult.Password
 
-	match, err := verifyPassword(plainPassword, hashedPassword)
+	match, err := hash.VerifyPassword(plainPassword, hashedPassword)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -131,7 +134,23 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
+	accessToken, err := jwt.EncodeJwt(jwt.Payload{
+		FullName: authResult.FullName,
+		Email:    authResult.Email,
+	})
+
+	claims, err := jwt.DecodeJwt(accessToken)
+
+	fmt.Println(claims)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"data": match,
+		"data": accessToken,
 	})
 }
