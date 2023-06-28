@@ -1,3 +1,3 @@
 # How To Run
 * Setup Doppler
-* Run this command: `go build && doppler run -- ./aurora`
+* Run this command: `doppler run -- air`
