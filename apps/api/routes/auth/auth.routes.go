@@ -3,7 +3,6 @@ package auth
 import (
 	"aurora/services/hash"
 	"aurora/services/jwt"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -139,10 +138,6 @@ func LoginUser(c *gin.Context) {
 		Email:    authResult.Email,
 	})
 
-	claims, err := jwt.DecodeJwt(accessToken)
-
-	fmt.Println(claims)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -150,7 +145,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": accessToken,
-	})
+	c.Header("x-access-token", accessToken)
+	c.Header("x-refresh-token", accessToken)
+	c.Status(http.StatusOK)
 }
