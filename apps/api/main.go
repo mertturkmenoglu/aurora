@@ -2,17 +2,22 @@ package main
 
 import (
 	"aurora/routes"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	routes.Bootstrap(router)
-
-	err := router.Run(":3000")
+	err := router.SetTrustedProxies(nil)
 
 	if err != nil {
-		fmt.Println("Cannot run application")
+		panic(err.Error())
+	}
+
+	routes.Bootstrap(router)
+
+	err = router.Run(":3000")
+
+	if err != nil {
+		panic(err.Error())
 	}
 }
