@@ -3,3 +3,4 @@ node_modules/
 # JetBrains Rider's auto generated files
 .idea/
 /apps/api/aurora
+/apps/api/tmp/
