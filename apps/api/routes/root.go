@@ -4,9 +4,9 @@ import (
 	"aurora/middlewares"
 	"aurora/routes/auth"
 	"aurora/routes/aws"
+	"aurora/routes/users"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/ratelimit"
-	"net/http"
 	"time"
 )
 
@@ -22,9 +22,5 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/dynamo", aws.GetAwsDummyDynamoData)
 	app.POST("/auth/register", auth.RegisterUser)
 	app.POST("/auth/login", auth.LoginUser)
-	app.GET("/secret", middlewares.IsAuth(), func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Secret data",
-		})
-	})
+	app.GET("/users/:email", middlewares.IsAuth(), users.GetUserById)
 }
