@@ -163,6 +163,7 @@ func LoginUser(c *gin.Context) {
 	}
 
 	accessToken, err := jwt.EncodeJwt(jwt.Payload{
+		Id:       authResult.Id,
 		FullName: authResult.FullName,
 		Email:    authResult.Email,
 	})
