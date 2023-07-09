@@ -1,5 +1,7 @@
 <template>
   <div>
-    <Button />
+    <NuxtLayout>
+      <NuxtPage class="container mx-auto"/>
+    </NuxtLayout>
   </div>
 </template>
