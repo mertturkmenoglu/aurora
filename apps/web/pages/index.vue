@@ -1,17 +1,22 @@
 <template>
   <header>
-    <Sliver :showSliver="showSliver"/>
+    <Sliver v-if="showSliver" @close="showSliver = false" />
     <nav class="py-4 flex justify-between items-center">
       <div class="flex items-center">
         <nuxt-link to="/" class="flex items-center">
-          <CloudIcon class="h-8 w-8 text-black"/>
+          <CloudIcon class="h-8 w-8 text-black" />
           <span class="text-xl text-black ml-2">Aurora</span>
         </nuxt-link>
       </div>
       <div class="flex items-end">
-        <input v-model="searchTerm" type="text" class="border-b border-b-black rounded-none py-1 px-1 pr-6" placeholder="Search"/>
+        <input
+            v-model="searchTerm"
+            type="text"
+            class="border-b border-b-black rounded-none py-1 px-1 pr-6"
+            placeholder="Search"
+        />
         <nuxt-link :to="`/search?t=${searchTerm}`">
-          <MagnifyingGlassIcon class="h-4 w-4 -ml-4 mb-2 text-black"/>
+          <MagnifyingGlassIcon class="h-4 w-4 -ml-4 mb-2 text-black" />
         </nuxt-link>
 
         <nuxt-link to="/signin" class="hover:underline ml-4 flex items-end space-x-1">
@@ -20,7 +25,7 @@
         </nuxt-link>
 
         <nuxt-link to="/cart" class="flex items-end space-x-1 ml-4 hover:underline">
-          <ShoppingBagIcon class="h-6 w-6 text-black"/>
+          <ShoppingBagIcon class="h-6 w-6 text-black" />
           <span>Cart</span>
         </nuxt-link>
       </div>
