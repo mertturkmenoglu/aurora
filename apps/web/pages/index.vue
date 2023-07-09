@@ -1,11 +1,6 @@
 <template>
   <header>
-    <div v-if="showSliver" class="bg-black text-white py-2 flex items-center px-8 justify-center relative">
-      <span class="">Welcome to Aurora</span>
-      <button @click="showSliver = false" class="absolute right-8">
-        <XMarkIcon class="h-4 w-4 text-white"/>
-      </button>
-    </div>
+    <Sliver :showSliver="showSliver"/>
     <nav class="py-4 flex justify-between items-center">
       <div class="flex items-center">
         <nuxt-link to="/" class="flex items-center">
@@ -14,7 +9,7 @@
         </nuxt-link>
       </div>
       <div class="flex items-end">
-        <input v-model="searchTerm" type="text" class="border-b border-b-black rounded-none py-1 px-1" placeholder="Search"/>
+        <input v-model="searchTerm" type="text" class="border-b border-b-black rounded-none py-1 px-1 pr-6" placeholder="Search"/>
         <nuxt-link :to="`/search?t=${searchTerm}`">
           <MagnifyingGlassIcon class="h-4 w-4 -ml-4 mb-2 text-black"/>
         </nuxt-link>
@@ -29,12 +24,12 @@
           <span>Cart</span>
         </nuxt-link>
       </div>
-
     </nav>
   </header>
 </template>
+
 <script setup lang="ts">
-import {XMarkIcon, CloudIcon, ShoppingBagIcon, MagnifyingGlassIcon, UserIcon} from '@heroicons/vue/24/outline'
+import { CloudIcon, ShoppingBagIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/vue/24/outline'
 
 const showSliver = ref(true)
 const searchTerm = ref('')
