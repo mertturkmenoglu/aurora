@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto">
     <NuxtLayout>
-      <Header />
-      <NuxtPage />
+      <Header/>
+      <NuxtPage/>
     </NuxtLayout>
   </div>
 </template>
