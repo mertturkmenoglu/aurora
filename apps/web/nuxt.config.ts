@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/tailwindcss',
         '@nuxtjs/i18n',
+        '@nuxt/image'
     ],
     i18n: {
         locales: ['en', 'tr'],
