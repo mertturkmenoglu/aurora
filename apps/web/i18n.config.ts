@@ -3,10 +3,26 @@ export default defineI18nConfig(() => ({
     locale: 'en',
     messages: {
         en: {
-            welcome: 'Welcome'
+            header: {
+                sliverTitle: "Welcome to Aurora",
+                signIn: "Sign in",
+                cart: "Cart",
+                search: "Search",
+            },
+            home: {
+                welcomeText: "Welcome",
+            }
         },
         tr: {
-            welcome: 'Hoşgeldiniz'
+            header: {
+                sliverTitle: "Aurora'ya hoşgeldiniz",
+                signIn: "Giriş Yap",
+                cart: "Sepet",
+                search: "Ara",
+            },
+            home: {
+                welcomeText: "Hoşgeldiniz",
+            }
         }
     }
 }))

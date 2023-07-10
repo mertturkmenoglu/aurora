@@ -11,8 +11,8 @@
       <div class="flex items-end">
         <input
             v-model="searchTerm"
+            :placeholder="$t('header.search')"
             class="border-b border-b-black rounded-none py-1 px-1 pr-6"
-            placeholder="Search"
             type="text"
         />
         <nuxt-link :to="`/search?t=${searchTerm}`">
@@ -21,12 +21,12 @@
 
         <nuxt-link class="hover:underline ml-4 flex items-end space-x-1" to="/signin">
           <UserIcon class="h-6 w-6 text-black"/>
-          <span>Sign in</span>
+          <span>{{ $t('header.signIn') }}</span>
         </nuxt-link>
 
         <nuxt-link class="flex items-end space-x-1 ml-4 hover:underline" to="/cart">
           <ShoppingBagIcon class="h-6 w-6 text-black"/>
-          <span>Cart</span>
+          <span>{{ $t('header.cart') }}</span>
         </nuxt-link>
       </div>
     </nav>
