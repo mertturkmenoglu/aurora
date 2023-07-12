@@ -1,6 +1,7 @@
 package users
 
 import (
+	"aurora/services/aws/models"
 	"aurora/services/jwt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,7 +19,7 @@ func GetUserById(c *gin.Context) {
 		return
 	}
 
-	var user *User
+	var user *models.User
 
 	res, err := user.GetUserByEmail(email)
 
