@@ -1,4 +1,4 @@
-package auth
+package models
 
 import (
 	awsService "aurora/services/aws"
@@ -16,26 +16,6 @@ type Auth struct {
 	Password string `dynamodbav:"password"`
 }
 
-func (auth *Auth) GetByKey(key map[string]types.AttributeValue) (*Auth, error) {
-	client := awsService.GetDynamoClient()
-	output, err := client.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		TableName: aws.String(awsService.AuthTable),
-		Key:       key,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = attributevalue.UnmarshalMap(output.Item, &auth)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return auth, nil
-}
-
 func (auth *Auth) GetByEmail(email string) (*Auth, error) {
 	key, err := attributevalue.Marshal(email)
 
@@ -43,7 +23,7 @@ func (auth *Auth) GetByEmail(email string) (*Auth, error) {
 		return nil, err
 	}
 
-	authResult, err := auth.GetByKey(map[string]types.AttributeValue{
+	authResult, err := GetByKey[Auth](AuthTable, map[string]types.AttributeValue{
 		"email": key,
 	})
 
@@ -59,7 +39,7 @@ func (auth *Auth) Save() (*dynamodb.PutItemOutput, error) {
 
 	client := awsService.GetDynamoClient()
 	output, err := client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(awsService.AuthTable),
+		TableName: aws.String(AuthTable),
 		Item:      item,
 	})
 
