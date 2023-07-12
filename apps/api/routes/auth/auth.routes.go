@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"aurora/services/aws/models"
 	"aurora/services/hash"
 	"aurora/services/jwt"
 	"github.com/gin-gonic/gin"
@@ -10,14 +11,14 @@ import (
 )
 
 func doesUserExist(email string) (bool, error) {
-	var auth Auth
+	var auth models.Auth
 	authResult, err := auth.GetByEmail(email)
 
 	if err != nil {
 		return false, err
 	}
 
-	if (Auth{}) == *authResult {
+	if (models.Auth{}) == *authResult {
 		return false, nil
 	}
 
@@ -87,7 +88,7 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	id := uuid.NewString()
-	auth := Auth{
+	auth := models.Auth{
 		Id:       id,
 		FullName: body.FullName,
 		Email:    body.Email,
@@ -133,7 +134,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	var auth Auth
+	var auth models.Auth
 	authResult, err := auth.GetByEmail(body.Email)
 
 	if err != nil {

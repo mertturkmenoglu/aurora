@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	authmod "aurora/routes/auth"
+	"aurora/services/aws/models"
 	"aurora/services/jwt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -29,7 +29,7 @@ func IsAuth() gin.HandlerFunc {
 			return
 		}
 
-		var auth authmod.Auth
+		var auth models.Auth
 		authResult, err := auth.GetByEmail(claims.Email)
 
 		if err != nil {
