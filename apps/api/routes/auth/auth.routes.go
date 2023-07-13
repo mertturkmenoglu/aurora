@@ -9,53 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
-	"strings"
 	"time"
-	"unicode"
 )
-
-func doesUserExist(email string) (bool, error) {
-	var auth models.Auth
-	authResult, err := auth.GetByEmail(email)
-
-	if err != nil {
-		return false, err
-	}
-
-	if (models.Auth{}) == *authResult {
-		return false, nil
-	}
-
-	return true, nil
-}
-
-func customPasswordCheck(password string) bool {
-	hasUpper := false
-	hasLower := false
-
-	for _, char := range password {
-		if unicode.IsUpper(char) {
-			hasUpper = true
-		}
-		if unicode.IsLower(char) {
-			hasLower = true
-		}
-		if hasLower && hasUpper {
-			break
-		}
-	}
-
-	return hasUpper && hasLower
-}
-
-func generateRandomShortId() string {
-	sid := uuid.NewString()
-	return strings.Split(sid, "-")[0]
-}
 
 func RegisterUser(c *gin.Context) {
 	body := c.MustGet("body").(RegisterDto)
 
+	// Password validation
+	// Password must have at least one uppercase and one lowercase letter
+	// Other password validations are handled with the binding tag
 	hadPassedCustomPasswordCheck := customPasswordCheck(body.Password)
 
 	if !hadPassedCustomPasswordCheck {
@@ -98,7 +60,7 @@ func RegisterUser(c *gin.Context) {
 		Password: hashedPassword,
 	}
 
-	result, err := auth.Save()
+	_, err = models.Save[models.Auth](&auth, models.AuthTable)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -107,9 +69,29 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	user := models.User{
+		Id:       id,
+		FullName: body.FullName,
+		Email:    body.Email,
+		AdPreference: models.AdPreference{
+			Email: body.HasAcceptedEmailCampaign,
+			Sms:   false,
+			Phone: false,
+		},
+		Addresses: make([]models.Address, 0),
+		Phone:     "",
+	}
+
+	_, err = models.Save[models.User](&user, models.UserTable)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }
 
 func LoginUser(c *gin.Context) {
