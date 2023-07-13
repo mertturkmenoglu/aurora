@@ -2,8 +2,11 @@ package middlewares
 
 import (
 	"aurora/services/aws/models"
+	"aurora/services/cache"
 	"aurora/services/jwt"
 	"aurora/services/utils"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -26,6 +29,20 @@ func IsAuth() gin.HandlerFunc {
 			return
 		}
 
+		var cacheJwt jwt.Payload
+		cacheRes, err := cache.HGetAll(fmt.Sprintf("auth:%s", claims.Email))
+
+		if err == nil && len(cacheRes) > 0 {
+			_ = json.Unmarshal([]byte(cacheRes["data"]), &cacheJwt)
+		}
+
+		if cacheJwt.Email != "" {
+			c.Set("user", cacheJwt)
+			c.Next()
+			return
+		}
+
+		// Cache miss
 		var auth models.Auth
 		authResult, err := auth.GetByEmail(claims.Email)
 
@@ -50,5 +67,14 @@ func IsAuth() gin.HandlerFunc {
 		c.Set("user", reqUser)
 
 		c.Next()
+
+		// Set cache
+		serializedData, _ := json.Marshal(reqUser)
+
+		obj := map[string]string{
+			"data": string(serializedData),
+		}
+
+		_ = cache.HSet(fmt.Sprintf("auth:%s", claims.Email), obj, cache.AuthTTL)
 	}
 }
