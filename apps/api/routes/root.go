@@ -24,7 +24,7 @@ func Bootstrap(router *gin.Engine) {
 	app.POST("/auth/password-reset", middlewares.ParseBody[auth.PasswordResetDto](), auth.PasswordReset)
 
 	// User routes
-	app.GET("/users/:email", middlewares.IsAuth(), users.GetUserById)
+	app.GET("/users/me", middlewares.IsAuth(), users.GetMe)
 
 	// Product routes
 	app.GET("/products/:id", products.GetProductById)

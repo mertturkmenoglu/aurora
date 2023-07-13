@@ -9,15 +9,9 @@ import (
 	"net/http"
 )
 
-func GetUserById(c *gin.Context) {
-	email := c.Param("email")
+func GetMe(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
-
-	// Check if the user is requesting their own data
-	if email != reqUser.Email {
-		utils.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
+	email := reqUser.Email
 
 	if hit := utils.CheckCache[models.User](c, cache.UserKey(email)); hit {
 		return
