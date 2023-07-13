@@ -11,7 +11,7 @@ import (
 )
 
 func Bootstrap(router *gin.Engine) {
-	app := router.Group("/v1")
+	app := router.Group("/api/v1")
 
 	middlewares.Limit = ratelimit.New(1000, ratelimit.Per(time.Minute))
 
