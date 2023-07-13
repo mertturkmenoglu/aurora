@@ -19,7 +19,9 @@ func GetUserById(c *gin.Context) {
 		return
 	}
 
-	utils.CheckCache[models.User](c, cache.UserKey(email))
+	if hit := utils.CheckCache[models.User](c, cache.UserKey(email)); hit {
+		return
+	}
 
 	// Cache miss
 	var user *models.User
