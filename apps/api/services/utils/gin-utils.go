@@ -36,3 +36,21 @@ func CheckCache[T models.DynamoModel](c *gin.Context, key string) {
 
 	// Cache miss, continue to regular flow
 }
+
+func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T) {
+	serializedData, err := json.Marshal(data)
+
+	if err != nil {
+		ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = cache.HSet(key, map[string]string{
+		"data": string(serializedData),
+	})
+
+	if err != nil {
+		ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+}
