@@ -33,3 +33,17 @@ func GetByKey[Table DynamoModel](tableName string, key map[string]types.Attribut
 
 	return &table, nil
 }
+
+func Save[T DynamoModel](data *T, tableName string) (*dynamodb.PutItemOutput, error) {
+	item, err := attributevalue.MarshalMap(data)
+
+	if err != nil {
+		return nil, err
+	}
+
+	client := awsService.GetDynamoClient()
+	return client.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		TableName: aws.String(tableName),
+		Item:      item,
+	})
+}
