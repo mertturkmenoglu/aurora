@@ -3,6 +3,7 @@ package middlewares
 import (
 	"aurora/services/aws/models"
 	"aurora/services/jwt"
+	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -12,9 +13,7 @@ func IsAuth() gin.HandlerFunc {
 		accessToken := c.GetHeader("x-access-token")
 
 		if accessToken == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Missing access token",
-			})
+			utils.ErrorResponse(c, http.StatusUnauthorized, "Missing access token")
 			c.Abort()
 			return
 		}
@@ -22,9 +21,7 @@ func IsAuth() gin.HandlerFunc {
 		claims, err := jwt.DecodeJwt(accessToken)
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": err.Error(),
-			})
+			utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
 			c.Abort()
 			return
 		}
@@ -33,17 +30,13 @@ func IsAuth() gin.HandlerFunc {
 		authResult, err := auth.GetByEmail(claims.Email)
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": err.Error(),
-			})
+			utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
 			c.Abort()
 			return
 		}
 
 		if authResult.Email == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Invalid credentials",
-			})
+			utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials")
 			c.Abort()
 			return
 		}
