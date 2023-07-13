@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 func CheckCache[T models.DynamoModel](c *gin.Context, key string) {
@@ -31,7 +32,7 @@ func CheckCache[T models.DynamoModel](c *gin.Context, key string) {
 	// Cache miss, continue to regular flow
 }
 
-func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T) {
+func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T, ttl time.Duration) {
 	serializedData, err := json.Marshal(data)
 
 	if err != nil {
@@ -39,9 +40,11 @@ func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T) {
 		return
 	}
 
-	err = cache.HSet(key, map[string]string{
+	obj := map[string]string{
 		"data": string(serializedData),
-	})
+	}
+
+	err = cache.HSet(key, obj, ttl)
 
 	if err != nil {
 		ErrorResponse(c, http.StatusInternalServerError, err.Error())

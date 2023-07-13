@@ -37,7 +37,7 @@ func GetUserById(c *gin.Context) {
 	}
 
 	// Set cache
-	utils.SetCache(c, cache.UserKey(email), res)
+	utils.SetCache(c, cache.UserKey(email), res, cache.UserTTL)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": res,

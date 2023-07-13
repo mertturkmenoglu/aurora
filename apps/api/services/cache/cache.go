@@ -45,7 +45,7 @@ func Del(key string) error {
 	return GetClient().Del(redisContext, key).Err()
 }
 
-func HSet(key string, obj map[string]string) error {
+func HSet(key string, obj map[string]string, ttl time.Duration) error {
 	c := GetClient()
 	for k, v := range obj {
 		err := c.HSet(redisContext, key, k, v).Err()
@@ -55,11 +55,12 @@ func HSet(key string, obj map[string]string) error {
 		}
 	}
 
+	c.Expire(redisContext, key, ttl)
+
 	return nil
 }
 
 func HGetAll(key string) (map[string]string, error) {
 	res, err := GetClient().HGetAll(redisContext, key).Result()
-	GetClient().Expire(redisContext, key, ProductTTL)
 	return res, err
 }

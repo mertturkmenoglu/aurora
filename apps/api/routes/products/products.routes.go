@@ -29,7 +29,7 @@ func GetProductById(c *gin.Context) {
 	}
 
 	// Set cache
-	utils.SetCache[models.Product](c, cache.ProductKey(id), productResult)
+	utils.SetCache[models.Product](c, cache.ProductKey(id), productResult, cache.ProductTTL)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": productResult,
