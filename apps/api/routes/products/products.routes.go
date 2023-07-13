@@ -12,19 +12,26 @@ func GetProductById(c *gin.Context) {
 	id := c.Param("id")
 	var product *models.Product
 
-	utils.CheckCache[models.Product](c, cache.ProductKey(id))
+	if hit := utils.CheckCache[models.Product](c, cache.ProductKey(id)); hit {
+		return
+	}
 
 	// Cache miss
 	productResult, err := product.GetProductById(id)
 
 	if err != nil {
+		if productResult.Id == "" {
+			utils.ErrorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	// Check if product exists
 	if productResult.Id == "" {
-		utils.ErrorResponse(c, http.StatusNotFound, "Product not found")
+		utils.ErrorResponse(c, http.StatusNotFound, "product not found")
 		return
 	}
 
