@@ -5,6 +5,7 @@ import (
 	"aurora/services/cache"
 	"aurora/services/hash"
 	"aurora/services/jwt"
+	"aurora/services/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,34 +22,26 @@ func RegisterUser(c *gin.Context) {
 	hadPassedCustomPasswordCheck := customPasswordCheck(body.Password)
 
 	if !hadPassedCustomPasswordCheck {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Validation failed for password field",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "Validation failed for password field")
 		return
 	}
 
 	userExistsResult, err := doesUserExist(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if userExistsResult {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "User already exists",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "User already exists")
 		return
 	}
 
 	hashedPassword, err := hash.StringHash(body.Password)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -63,9 +56,7 @@ func RegisterUser(c *gin.Context) {
 	_, err = models.Save[models.Auth](&auth, models.AuthTable)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -85,9 +76,7 @@ func RegisterUser(c *gin.Context) {
 	_, err = models.Save[models.User](&user, models.UserTable)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -100,16 +89,12 @@ func LoginUser(c *gin.Context) {
 	userExistsResult, err := doesUserExist(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !userExistsResult {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid credentials",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid credentials")
 		return
 	}
 
@@ -117,9 +102,7 @@ func LoginUser(c *gin.Context) {
 	authResult, err := auth.GetByEmail(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -129,16 +112,12 @@ func LoginUser(c *gin.Context) {
 	match, err := hash.VerifyHash(plainPassword, hashedPassword)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !match {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid credentials",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid credentials")
 		return
 	}
 
@@ -149,9 +128,7 @@ func LoginUser(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -166,16 +143,12 @@ func ForgotPassword(c *gin.Context) {
 	userExistsResult, err := doesUserExist(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !userExistsResult {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "User does not exist",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "User does not exist")
 		return
 	}
 
@@ -190,9 +163,7 @@ func ForgotPassword(c *gin.Context) {
 	hashed, err := hash.StringHash(formattedEmailSid)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -200,9 +171,7 @@ func ForgotPassword(c *gin.Context) {
 	err = cache.Set(key, hashed, time.Minute*15)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -220,9 +189,7 @@ func PasswordReset(c *gin.Context) {
 	hadPassedCustomPasswordCheck := customPasswordCheck(body.NewPassword)
 
 	if !hadPassedCustomPasswordCheck {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Validation failed for password field",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "Validation failed for password field")
 		return
 	}
 
@@ -230,16 +197,12 @@ func PasswordReset(c *gin.Context) {
 	userExistsResult, err := doesUserExist(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !userExistsResult {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "User does not exist",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "User does not exist")
 		return
 	}
 
@@ -251,9 +214,7 @@ func PasswordReset(c *gin.Context) {
 	hashed, err := cache.Get(key)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -261,16 +222,12 @@ func PasswordReset(c *gin.Context) {
 	match, err := hash.VerifyHash(formattedEmailSid, hashed)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !match {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid reset token",
-		})
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid reset token")
 		return
 	}
 
@@ -279,18 +236,14 @@ func PasswordReset(c *gin.Context) {
 	authResult, err := auth.GetByEmail(body.Email)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	hashedPassword, err := hash.StringHash(body.NewPassword)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -298,9 +251,7 @@ func PasswordReset(c *gin.Context) {
 	_, err = authResult.Update()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
