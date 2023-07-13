@@ -17,8 +17,15 @@ func Bootstrap(router *gin.Engine) {
 
 	app.Use(middlewares.LeakBucket())
 
-	app.POST("/auth/register", auth.RegisterUser)
-	app.POST("/auth/login", auth.LoginUser)
+	// Auth routes
+	app.POST("/auth/register", middlewares.ParseBody[auth.RegisterDto](), auth.RegisterUser)
+	app.POST("/auth/login", middlewares.ParseBody[auth.LoginDto](), auth.LoginUser)
+	app.POST("/auth/forgot-password", middlewares.ParseBody[auth.ForgotPasswordDto](), auth.ForgotPassword)
+	app.POST("/auth/password-reset", middlewares.ParseBody[auth.PasswordResetDto](), auth.PasswordReset)
+
+	// User routes
 	app.GET("/users/:email", middlewares.IsAuth(), users.GetUserById)
+
+	// Product routes
 	app.GET("/products/:id", products.GetProductById)
 }
