@@ -49,3 +49,31 @@ func (auth *Auth) Save() (*dynamodb.PutItemOutput, error) {
 
 	return output, nil
 }
+
+func (auth *Auth) Update() (*dynamodb.UpdateItemOutput, error) {
+	key, err := attributevalue.Marshal(auth.Email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	client := awsService.GetDynamoClient()
+	output, err := client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+		TableName: aws.String(AuthTable),
+		Key: map[string]types.AttributeValue{
+			"email": key,
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":password": &types.AttributeValueMemberS{
+				Value: auth.Password,
+			},
+		},
+		UpdateExpression: aws.String("set password = :password"),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return output, nil
+}
