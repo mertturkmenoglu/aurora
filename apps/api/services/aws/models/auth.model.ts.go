@@ -30,26 +30,6 @@ func (auth *Auth) GetByEmail(email string) (*Auth, error) {
 	return authResult, err
 }
 
-func (auth *Auth) Save() (*dynamodb.PutItemOutput, error) {
-	item, err := attributevalue.MarshalMap(auth)
-
-	if err != nil {
-		return nil, err
-	}
-
-	client := awsService.GetDynamoClient()
-	output, err := client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(AuthTable),
-		Item:      item,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return output, nil
-}
-
 func (auth *Auth) Update() (*dynamodb.UpdateItemOutput, error) {
 	key, err := attributevalue.Marshal(auth.Email)
 
@@ -58,7 +38,7 @@ func (auth *Auth) Update() (*dynamodb.UpdateItemOutput, error) {
 	}
 
 	client := awsService.GetDynamoClient()
-	output, err := client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+	return client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		TableName: aws.String(AuthTable),
 		Key: map[string]types.AttributeValue{
 			"email": key,
@@ -70,10 +50,4 @@ func (auth *Auth) Update() (*dynamodb.UpdateItemOutput, error) {
 		},
 		UpdateExpression: aws.String("set password = :password"),
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return output, nil
 }
