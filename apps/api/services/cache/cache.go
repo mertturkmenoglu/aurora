@@ -41,6 +41,10 @@ func Set(key string, value string, exp time.Duration) error {
 	return GetClient().Set(redisContext, key, value, exp).Err()
 }
 
+func Del(key string) error {
+	return GetClient().Del(redisContext, key).Err()
+}
+
 func HSet(key string, obj map[string]string) error {
 	c := GetClient()
 	for k, v := range obj {
