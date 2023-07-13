@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
@@ -38,6 +39,10 @@ func (product *Product) GetProductById(id string) (*Product, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	if productResult.Id == "" {
+		return productResult, errors.New("product not found")
 	}
 
 	brand, err := productResult.Brand.GetBrandById(productResult.BrandId)
