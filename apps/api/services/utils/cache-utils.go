@@ -5,14 +5,17 @@ import (
 	"aurora/services/cache"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"time"
 )
 
-func CheckCache[T models.DynamoModel](c *gin.Context, key string) {
+func CheckCache[T models.DynamoModel](c *gin.Context, key string) bool {
 	var result *T
 
 	cacheResult, err := cache.HGetAll(key)
+
+	log.Println("Cache result: ", cacheResult, err)
 
 	// Cache hit
 	if err == nil && len(cacheResult) > 0 {
@@ -20,16 +23,18 @@ func CheckCache[T models.DynamoModel](c *gin.Context, key string) {
 
 		if err != nil {
 			ErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return
+			return false
 		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": result,
 		})
-		return
+		c.Done()
+		return true
 	}
 
 	// Cache miss, continue to regular flow
+	return false
 }
 
 func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T, ttl time.Duration) {
@@ -37,6 +42,7 @@ func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T, ttl tim
 
 	if err != nil {
 		ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		c.Abort()
 		return
 	}
 
@@ -48,6 +54,7 @@ func SetCache[T models.DynamoModel](c *gin.Context, key string, data *T, ttl tim
 
 	if err != nil {
 		ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		c.Abort()
 		return
 	}
 }
