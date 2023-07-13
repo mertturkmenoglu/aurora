@@ -3,6 +3,7 @@ package routes
 import (
 	"aurora/middlewares"
 	"aurora/routes/auth"
+	"aurora/routes/brands"
 	"aurora/routes/products"
 	"aurora/routes/users"
 	"github.com/gin-gonic/gin"
@@ -28,4 +29,7 @@ func Bootstrap(router *gin.Engine) {
 
 	// Product routes
 	app.GET("/products/:id", products.GetProductById)
+
+	// Brand routes
+	app.GET("/brands/:id", brands.GetBrandById)
 }
