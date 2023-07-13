@@ -34,7 +34,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return arr, nil
 }
 
-func HashPassword(password string) (string, error) {
+func StringHash(password string) (string, error) {
 	salt, err := generateRandomBytes(saltLength)
 
 	if err != nil {
@@ -51,8 +51,8 @@ func HashPassword(password string) (string, error) {
 	return encodedHash, nil
 }
 
-func VerifyPassword(plainPassword string, hashedPassword string) (bool, error) {
-	salt, hash, err := decodeHashedPassword(hashedPassword)
+func VerifyHash(plainPassword string, hashedPassword string) (bool, error) {
+	salt, hash, err := decodeHash(hashedPassword)
 
 	if err != nil {
 		return false, err
@@ -67,7 +67,7 @@ func VerifyPassword(plainPassword string, hashedPassword string) (bool, error) {
 	return false, nil
 }
 
-func decodeHashedPassword(str string) ([]byte, []byte, error) {
+func decodeHash(str string) ([]byte, []byte, error) {
 	parts := strings.Split(str, "$")
 
 	if len(parts) != 6 {
