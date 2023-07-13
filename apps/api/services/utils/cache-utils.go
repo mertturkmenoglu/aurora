@@ -5,7 +5,6 @@ import (
 	"aurora/services/cache"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"time"
 )
@@ -14,8 +13,6 @@ func CheckCache[T models.DynamoModel](c *gin.Context, key string) bool {
 	var result *T
 
 	cacheResult, err := cache.HGetAll(key)
-
-	log.Println("Cache result: ", cacheResult, err)
 
 	// Cache hit
 	if err == nil && len(cacheResult) > 0 {
@@ -29,7 +26,6 @@ func CheckCache[T models.DynamoModel](c *gin.Context, key string) bool {
 		c.JSON(http.StatusOK, gin.H{
 			"data": result,
 		})
-		c.Done()
 		return true
 	}
 
