@@ -1,6 +1,7 @@
 package brands
 
 import (
+	"aurora/services/cache"
 	"aurora/services/db"
 	"aurora/services/db/models"
 	"aurora/services/utils"
@@ -35,6 +36,17 @@ func GetBrandById(c *gin.Context) {
 		return
 	}
 
+	key := cache.GetFormattedKey(cache.BrandKeyFormat, id)
+
+	cacheResult, err := cache.HGet[models.Brand](key)
+
+	if cacheResult != nil && err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"data": cacheResult,
+		})
+		return
+	}
+
 	var brand models.Brand
 
 	res := db.Client.First(&brand, "id = ?", id)
@@ -43,6 +55,8 @@ func GetBrandById(c *gin.Context) {
 		utils.ErrorResponse(c, http.StatusInternalServerError, res.Error.Error())
 		return
 	}
+
+	_ = cache.HSet(key, brand, cache.BrandTTL)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": brand,
