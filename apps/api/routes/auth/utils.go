@@ -1,7 +1,9 @@
 package auth
 
 import (
-	"aurora/services/aws/models"
+	"aurora/services/db"
+	"aurora/services/db/models"
+	"fmt"
 	"github.com/google/uuid"
 	"strings"
 	"unicode"
@@ -9,10 +11,14 @@ import (
 
 func doesUserExist(email string) (bool, error) {
 	var auth models.Auth
-	authResult, err := auth.GetByEmail(email)
+	res := db.Client.First(&auth, "email = ?", email)
 
-	if err != nil || (models.Auth{}) == *authResult {
-		return false, err
+	if res.Error != nil {
+		fmt.Println("Here")
+		if strings.Contains(res.Error.Error(), "record not found") {
+			return false, nil
+		}
+		return false, res.Error
 	}
 
 	return true, nil
