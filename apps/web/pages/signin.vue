@@ -30,7 +30,7 @@
     </div>
 
     <div class="mt-16 w-full">
-      <button class="bg-black text-white py-1 px-4 rounded w-full" type="submit">Sign in</button>
+      <button type="submit" class="bg-black text-white py-2 px-4 rounded-lg w-full">Sign in</button>
     </div>
 
     <div class="mt-8 flex flex-col space-y-2">
