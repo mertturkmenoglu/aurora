@@ -1,8 +1,9 @@
 package middlewares
 
 import (
-	"aurora/services/aws/models"
 	"aurora/services/cache"
+	"aurora/services/db"
+	"aurora/services/db/models"
 	"aurora/services/jwt"
 	"aurora/services/utils"
 	"encoding/json"
@@ -44,24 +45,24 @@ func IsAuth() gin.HandlerFunc {
 
 		// Cache miss
 		var auth models.Auth
-		authResult, err := auth.GetByEmail(claims.Email)
+		result := db.Client.Find(&auth, "email = ?", claims.Email)
 
-		if err != nil {
-			utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
+		if result.Error != nil {
+			utils.ErrorResponse(c, http.StatusUnauthorized, result.Error.Error())
 			c.Abort()
 			return
 		}
 
-		if authResult.Email == "" {
+		if auth.Email == "" {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials")
 			c.Abort()
 			return
 		}
 
 		reqUser := jwt.Payload{
-			Id:       authResult.Id,
-			FullName: authResult.FullName,
-			Email:    authResult.Email,
+			Id:       auth.ID.String(),
+			FullName: auth.FullName,
+			Email:    auth.Email,
 		}
 
 		c.Set("user", reqUser)
