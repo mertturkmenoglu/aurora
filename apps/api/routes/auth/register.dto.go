@@ -10,7 +10,7 @@ type RegisterDto struct {
 	Email                    string `json:"email" binding:"required,email"`
 	Password                 string `json:"password" binding:"required,min=8,max=64"`
 	VerifyPassword           string `json:"verifyPassword" binding:"required,eqfield=Password"`
-	HasAcceptedEmailCampaign bool   `json:"hasAcceptedEmailCampaign" binding:"required"`
+	HasAcceptedEmailCampaign bool   `json:"hasAcceptedEmailCampaign" validate:"exists"`
 }
 
 func (dto RegisterDto) GetKey() map[string]types.AttributeValue {

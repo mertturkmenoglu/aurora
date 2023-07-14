@@ -10,6 +10,9 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxt/image": "^1.0.0-rc.1",
+    "@nuxtjs/eslint-module": "^4.1.0",
+    "@nuxtjs/i18n": "^8.0.0-beta.13",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18",
     "nuxt": "^3.5.2"

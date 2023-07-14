@@ -1,15 +1,15 @@
 version: "3.9"
 
 services:
-  redis:
+  aurora-redis:
     image: redis:alpine
     restart: always
     networks:
       - redisnet
     ports:
       - "6379:6379"
-  elasticsearch:
-    container_name: elasticsearch
+  aurora-elasticsearch:
+    container_name: aurora-elasticsearch
     image: elasticsearch:8.7.0
     restart: always
     networks:
@@ -25,7 +25,7 @@ services:
       - xpack.security.enabled=false
     volumes:
       - esdata:/usr/share/elasticsearch/data
-  kibana:
+  aurora-kibana:
     image: kibana:8.7.0
     restart: always
     networks:
@@ -35,7 +35,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
-      - elasticsearch
+      - aurora-elasticsearch
 
 networks:
   redisnet:

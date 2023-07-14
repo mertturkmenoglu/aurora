@@ -15,7 +15,7 @@ func main() {
 
 	routes.Bootstrap(router)
 
-	err = router.Run(":3000")
+	err = router.Run(":5000")
 
 	if err != nil {
 		panic(err.Error())

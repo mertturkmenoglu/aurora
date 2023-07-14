@@ -1,11 +1,7 @@
-package users
+package models
 
 import (
-	awsService "aurora/services/aws"
-	"context"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
@@ -37,26 +33,6 @@ type Address struct {
 	ZipCode     string `dynamodbav:"zipCode" json:"zipCode"`
 }
 
-func (user *User) GetByKey(key map[string]types.AttributeValue) (*User, error) {
-	client := awsService.GetDynamoClient()
-	output, err := client.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		TableName: aws.String(awsService.UserTable),
-		Key:       key,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = attributevalue.UnmarshalMap(output.Item, &user)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
 func (user *User) GetUserByEmail(email string) (*User, error) {
 	key, err := attributevalue.Marshal(email)
 
@@ -64,9 +40,7 @@ func (user *User) GetUserByEmail(email string) (*User, error) {
 		return nil, err
 	}
 
-	userResult, err := user.GetByKey(map[string]types.AttributeValue{
+	return GetByKey[User](UserTable, map[string]types.AttributeValue{
 		"email": key,
 	})
-
-	return userResult, err
 }
