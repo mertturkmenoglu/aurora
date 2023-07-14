@@ -10,7 +10,7 @@ import (
 )
 
 type DynamoModel interface {
-	Auth | Product | Brand | User | Address | AdPreference
+	Auth | Product | Brand | User | Address | AdPreference | Category
 }
 
 func GetByKey[Table DynamoModel](tableName string, key map[string]types.AttributeValue) (*Table, error) {
