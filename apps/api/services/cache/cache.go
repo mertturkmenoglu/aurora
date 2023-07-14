@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/redis/go-redis/v9"
 	"os"
 	"time"
@@ -45,14 +46,18 @@ func Del(key string) error {
 	return GetClient().Del(redisContext, key).Err()
 }
 
-func HSet(key string, obj map[string]string, ttl time.Duration) error {
+func HSet(key string, v any, ttl time.Duration) error {
 	c := GetClient()
-	for k, v := range obj {
-		err := c.HSet(redisContext, key, k, v).Err()
+	serialized, err := json.Marshal(v)
 
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
+	}
+
+	err = c.Set(redisContext, key, serialized, ttl).Err()
+
+	if err != nil {
+		return err
 	}
 
 	c.Expire(redisContext, key, ttl)
@@ -60,7 +65,15 @@ func HSet(key string, obj map[string]string, ttl time.Duration) error {
 	return nil
 }
 
-func HGetAll(key string) (map[string]string, error) {
-	res, err := GetClient().HGetAll(redisContext, key).Result()
-	return res, err
+func HGet[T any](key string) (*T, error) {
+	serialized, err := Get(key)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var v T
+
+	err = json.Unmarshal([]byte(serialized), &v)
+	return &v, err
 }
