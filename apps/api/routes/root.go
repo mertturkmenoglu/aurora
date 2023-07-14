@@ -32,4 +32,5 @@ func Bootstrap(router *gin.Engine) {
 
 	// Brand routes
 	app.GET("/brands/:id", brands.GetBrandById)
+	app.POST("/brands", middlewares.ParseBody[brands.CreateBrandDto](), brands.CreateBrand)
 }
