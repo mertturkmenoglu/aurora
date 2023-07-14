@@ -24,6 +24,8 @@ type Product struct {
 	Slug          string   `dynamodbav:"slug" json:"slug"`
 	BrandId       string   `dynamodbav:"brandId" json:"brandId"`
 	Brand         Brand    `json:"brand"`
+	CategoryId    string   `dynamodbav:"categoryId" json:"categoryId"`
+	Category      Category `json:"category"`
 }
 
 func (product *Product) GetProductById(id string) (*Product, error) {
@@ -52,6 +54,14 @@ func (product *Product) GetProductById(id string) (*Product, error) {
 	}
 
 	productResult.Brand = *brand
+
+	category, err := productResult.Category.GetCategoryById(productResult.CategoryId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	productResult.Category = *category
 
 	return productResult, nil
 
