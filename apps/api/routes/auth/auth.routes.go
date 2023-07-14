@@ -1,14 +1,14 @@
 package auth
 
 import (
-	"aurora/services/aws/models"
 	"aurora/services/cache"
+	"aurora/services/db"
+	"aurora/services/db/models"
 	"aurora/services/hash"
 	"aurora/services/jwt"
 	"aurora/services/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
@@ -45,23 +45,20 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	id := uuid.NewString()
 	auth := models.Auth{
-		Id:       id,
 		FullName: body.FullName,
 		Email:    body.Email,
 		Password: hashedPassword,
 	}
 
-	_, err = models.Save[models.Auth](&auth, models.AuthTable)
+	result := db.Client.Create(&auth)
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	if result.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	user := models.User{
-		Id:       id,
 		FullName: body.FullName,
 		Email:    body.Email,
 		AdPreference: models.AdPreference{
@@ -73,10 +70,10 @@ func RegisterUser(c *gin.Context) {
 		Phone:     "",
 	}
 
-	_, err = models.Save[models.User](&user, models.UserTable)
+	result = db.Client.Create(&user)
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	if result.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
@@ -99,15 +96,16 @@ func LoginUser(c *gin.Context) {
 	}
 
 	var auth models.Auth
-	authResult, err := auth.GetByEmail(body.Email)
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	result := db.Client.First(&auth, "email = ?", body.Email)
+
+	if result.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	plainPassword := body.Password
-	hashedPassword := authResult.Password
+	hashedPassword := auth.Password
 
 	match, err := hash.VerifyHash(plainPassword, hashedPassword)
 
@@ -122,9 +120,9 @@ func LoginUser(c *gin.Context) {
 	}
 
 	accessToken, err := jwt.EncodeJwt(jwt.Payload{
-		Id:       authResult.Id,
-		FullName: authResult.FullName,
-		Email:    authResult.Email,
+		Id:       auth.ID.String(),
+		FullName: auth.FullName,
+		Email:    auth.Email,
 	})
 
 	if err != nil {
@@ -233,10 +231,10 @@ func PasswordReset(c *gin.Context) {
 
 	// Update the user's password
 	var auth models.Auth
-	authResult, err := auth.GetByEmail(body.Email)
+	result := db.Client.First(&auth, "email = ?", body.Email)
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	if result.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
@@ -247,11 +245,12 @@ func PasswordReset(c *gin.Context) {
 		return
 	}
 
-	authResult.Password = hashedPassword
-	_, err = authResult.Update()
+	auth.Password = hashedPassword
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	result = db.Client.Save(&auth)
+
+	if result.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 

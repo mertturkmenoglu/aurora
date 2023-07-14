@@ -1,41 +1,33 @@
 package users
 
 import (
-	"aurora/services/aws/models"
-	"aurora/services/cache"
+	_ "aurora/services/cache"
+	"aurora/services/db"
+	"aurora/services/db/models"
 	"aurora/services/jwt"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func GetMe(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 	email := reqUser.Email
 
-	if hit := utils.CheckCache[models.User](c, cache.UserKey(email)); hit {
-		return
-	}
-
-	// Cache miss
 	var user *models.User
-	res, err := user.GetUserByEmail(email)
+	result := db.Client.Find(&user, "email = ?", email)
 
-	if err != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "record not found") {
+			utils.ErrorResponse(c, http.StatusNotFound, "User not found")
+			return
+		}
+		utils.ErrorResponse(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
-
-	// Empty field means user not found
-	if res.Id == "" {
-		utils.ErrorResponse(c, http.StatusNotFound, "User not found")
-		return
-	}
-
-	// Set cache
-	utils.SetCache(c, cache.UserKey(email), res, cache.UserTTL)
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": res,
+		"data": user,
 	})
 }
