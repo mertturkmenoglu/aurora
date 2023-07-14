@@ -6,8 +6,6 @@ import (
 	"aurora/services/db/models"
 	"aurora/services/jwt"
 	"aurora/services/utils"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,15 +28,10 @@ func IsAuth() gin.HandlerFunc {
 			return
 		}
 
-		var cacheJwt jwt.Payload
-		cacheRes, err := cache.HGetAll(fmt.Sprintf("auth:%s", claims.Email))
+		cacheResult, err := cache.HGet[jwt.Payload](cache.GetFormattedKey(cache.AuthKeyFormat, claims.Email))
 
-		if err == nil && len(cacheRes) > 0 {
-			_ = json.Unmarshal([]byte(cacheRes["data"]), &cacheJwt)
-		}
-
-		if cacheJwt.Email != "" {
-			c.Set("user", cacheJwt)
+		if err == nil && cacheResult != nil {
+			c.Set("user", cacheResult)
 			c.Next()
 			return
 		}
@@ -47,13 +40,7 @@ func IsAuth() gin.HandlerFunc {
 		var auth models.Auth
 		result := db.Client.Find(&auth, "email = ?", claims.Email)
 
-		if result.Error != nil {
-			utils.ErrorResponse(c, http.StatusUnauthorized, result.Error.Error())
-			c.Abort()
-			return
-		}
-
-		if auth.Email == "" {
+		if result.Error != nil || auth.Email == "" {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials")
 			c.Abort()
 			return
@@ -66,16 +53,9 @@ func IsAuth() gin.HandlerFunc {
 		}
 
 		c.Set("user", reqUser)
-
 		c.Next()
 
 		// Set cache
-		serializedData, _ := json.Marshal(reqUser)
-
-		obj := map[string]string{
-			"data": string(serializedData),
-		}
-
-		_ = cache.HSet(fmt.Sprintf("auth:%s", claims.Email), obj, cache.AuthTTL)
+		_ = cache.HSet(cache.GetFormattedKey(cache.AuthKeyFormat, claims.Email), reqUser, cache.AuthTTL)
 	}
 }
