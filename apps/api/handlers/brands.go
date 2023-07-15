@@ -7,6 +7,7 @@ import (
 	"aurora/services/db/models"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -32,8 +33,8 @@ func CreateBrand(c *gin.Context) {
 func GetBrandById(c *gin.Context) {
 	id := c.Param("id")
 
-	if id == "" {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is required")
+	if _, err := uuid.Parse(id); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "id is missing or malformed")
 		return
 	}
 
