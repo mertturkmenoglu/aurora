@@ -1,20 +1,18 @@
-package auth
+package utils
 
 import (
 	"aurora/services/db"
 	"aurora/services/db/models"
-	"fmt"
 	"github.com/google/uuid"
 	"strings"
 	"unicode"
 )
 
-func doesUserExist(email string) (bool, error) {
+func DoesUserExist(email string) (bool, error) {
 	var auth models.Auth
 	res := db.Client.First(&auth, "email = ?", email)
 
 	if res.Error != nil {
-		fmt.Println("Here")
 		if strings.Contains(res.Error.Error(), "record not found") {
 			return false, nil
 		}
@@ -24,7 +22,7 @@ func doesUserExist(email string) (bool, error) {
 	return true, nil
 }
 
-func customPasswordCheck(password string) bool {
+func CustomPasswordCheck(password string) bool {
 	hasUpper := false
 	hasLower := false
 
@@ -43,7 +41,7 @@ func customPasswordCheck(password string) bool {
 	return hasUpper && hasLower
 }
 
-func generateRandomShortId() string {
+func GenerateRandomShortId() string {
 	sid := uuid.NewString()
 	return strings.Split(sid, "-")[0]
 }

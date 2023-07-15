@@ -1,4 +1,4 @@
-package auth
+package dto
 
 type PasswordResetDto struct {
 	Email       string `json:"email" binding:"required,email"`

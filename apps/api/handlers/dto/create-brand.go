@@ -1,4 +1,4 @@
-package brands
+package dto
 
 type CreateBrandDto struct {
 	Name        string `json:"name" binding:"required"`

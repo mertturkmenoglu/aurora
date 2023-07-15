@@ -2,20 +2,27 @@ package cache
 
 import "fmt"
 
+type Key string
+
 const (
-	ProductKeyFormat = "product:%s"
-	UserKeyFormat    = "user:%s"
-	BrandKeyFormat   = "brand:%s"
+	AuthKeyFormat           Key = "auth:%s"
+	ForgotPasswordKeyFormat Key = "forgot-password:%s"
+	ProductKeyFormat        Key = "product:%s"
+	UserKeyFormat           Key = "user:%s"
+	BrandKeyFormat          Key = "brand:%s"
 )
 
-func ProductKey(id string) string {
-	return fmt.Sprintf(ProductKeyFormat, id)
-}
-
-func UserKey(email string) string {
-	return fmt.Sprintf(UserKeyFormat, email)
-}
-
-func BrandKey(id string) string {
-	return fmt.Sprintf(BrandKeyFormat, id)
+func GetFormattedKey(t Key, key string) string {
+	switch t {
+	case ProductKeyFormat:
+		return fmt.Sprintf(string(ProductKeyFormat), key)
+	case UserKeyFormat:
+		return fmt.Sprintf(string(UserKeyFormat), key)
+	case BrandKeyFormat:
+		return fmt.Sprintf(string(BrandKeyFormat), key)
+	case ForgotPasswordKeyFormat:
+		return fmt.Sprintf(string(ForgotPasswordKeyFormat), key)
+	default:
+		return ""
+	}
 }

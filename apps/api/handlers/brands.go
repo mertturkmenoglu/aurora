@@ -1,15 +1,18 @@
-package brands
+package handlers
 
 import (
+	"aurora/handlers/dto"
+	"aurora/services/cache"
 	"aurora/services/db"
 	"aurora/services/db/models"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 )
 
 func CreateBrand(c *gin.Context) {
-	body := c.MustGet("body").(CreateBrandDto)
+	body := c.MustGet("body").(dto.CreateBrandDto)
 	brand := models.Brand{
 		Name:        body.Name,
 		Description: body.Description,
@@ -18,7 +21,7 @@ func CreateBrand(c *gin.Context) {
 	res := db.Client.Create(&brand)
 
 	if res.Error != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, res.Error.Error())
+		utils.HandleDatabaseError(c, res.Error)
 		return
 	}
 
@@ -30,8 +33,19 @@ func CreateBrand(c *gin.Context) {
 func GetBrandById(c *gin.Context) {
 	id := c.Param("id")
 
-	if id == "" {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is required")
+	if _, err := uuid.Parse(id); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "id is missing or malformed")
+		return
+	}
+
+	key := cache.GetFormattedKey(cache.BrandKeyFormat, id)
+
+	cacheResult, err := cache.HGet[models.Brand](key)
+
+	if cacheResult != nil && err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"data": cacheResult,
+		})
 		return
 	}
 
@@ -40,9 +54,11 @@ func GetBrandById(c *gin.Context) {
 	res := db.Client.First(&brand, "id = ?", id)
 
 	if res.Error != nil {
-		utils.ErrorResponse(c, http.StatusInternalServerError, res.Error.Error())
+		utils.HandleDatabaseError(c, res.Error)
 		return
 	}
+
+	_ = cache.HSet(key, brand, cache.BrandTTL)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": brand,

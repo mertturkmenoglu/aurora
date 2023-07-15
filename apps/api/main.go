@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aurora/routes"
+	"aurora/handlers"
 	"aurora/services/db"
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +24,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	routes.Bootstrap(router)
+	handlers.Bootstrap(router)
 
 	err = router.Run(":5000")
 
