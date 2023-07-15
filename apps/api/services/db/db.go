@@ -52,5 +52,6 @@ func AutoMigrate() error {
 		&models.ProductImage{},
 		&models.AdPreference{},
 		&models.Address{},
+		&models.Category{},
 	)
 }

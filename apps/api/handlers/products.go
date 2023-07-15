@@ -8,6 +8,7 @@ import (
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 	"net/http"
 )
 
@@ -87,8 +88,9 @@ func GetProductById(c *gin.Context) {
 
 	var product *models.Product
 	res := db.Client.
-		Preload("Images").
-		Preload("Brand").
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
 		First(&product, "ID = ?", id)
 
 	if res.Error != nil {

@@ -16,6 +16,7 @@ type CreateProductDto struct {
 	ShippingType  string            `json:"shippingType" binding:"required"`
 	Slug          string            `json:"slug" binding:"required"`
 	BrandId       string            `json:"brandId" binding:"required"`
+	CategoryId    string            `json:"categoryId" binding:"required"`
 }
 
 type ProductImageDto struct {
