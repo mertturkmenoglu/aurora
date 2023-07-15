@@ -25,7 +25,10 @@ func GetMe(c *gin.Context) {
 	}
 
 	var user *models.User
-	res := db.Client.Find(&user, "email = ?", email)
+	res := db.Client.
+		Preload("AdPreference").
+		Preload("Addresses").
+		Find(&user, "email = ?", email)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
