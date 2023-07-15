@@ -2,6 +2,6 @@ package models
 
 type Brand struct {
 	BaseModel
-	Name        string
-	Description string
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
