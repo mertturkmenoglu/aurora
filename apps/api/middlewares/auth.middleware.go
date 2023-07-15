@@ -28,7 +28,8 @@ func IsAuth() gin.HandlerFunc {
 			return
 		}
 
-		cacheResult, err := cache.HGet[jwt.Payload](cache.GetFormattedKey(cache.AuthKeyFormat, claims.Email))
+		key := cache.GetFormattedKey(cache.AuthKeyFormat, claims.Email)
+		cacheResult, err := cache.HGet[jwt.Payload](key)
 
 		if err == nil && cacheResult != nil {
 			c.Set("user", cacheResult)
@@ -40,22 +41,22 @@ func IsAuth() gin.HandlerFunc {
 		var auth models.Auth
 		result := db.Client.Find(&auth, "email = ?", claims.Email)
 
-		if result.Error != nil || auth.Email == "" {
+		if result.Error != nil {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials")
 			c.Abort()
 			return
 		}
 
 		reqUser := jwt.Payload{
-			Id:       auth.ID.String(),
+			Id:       auth.Id.String(),
 			FullName: auth.FullName,
 			Email:    auth.Email,
 		}
 
+		// Set cache
+		_ = cache.HSet(key, reqUser, cache.AuthTTL)
+
 		c.Set("user", reqUser)
 		c.Next()
-
-		// Set cache
-		_ = cache.HSet(cache.GetFormattedKey(cache.AuthKeyFormat, claims.Email), reqUser, cache.AuthTTL)
 	}
 }
