@@ -34,5 +34,13 @@ func Init() {
 }
 
 func AutoMigrate() error {
-	return Client.AutoMigrate(&models.Auth{}, &models.Test{}, &models.User{}, &models.Brand{}, &models.Product{})
+	return Client.AutoMigrate(
+		&models.Auth{},
+		&models.User{},
+		&models.Brand{},
+		&models.Product{},
+		&models.ProductImage{},
+		&models.AdPreference{},
+		&models.Address{},
+	)
 }
