@@ -5,10 +5,11 @@ import "fmt"
 type Key string
 
 const (
-	AuthKeyFormat    Key = "auth:%s"
-	ProductKeyFormat Key = "product:%s"
-	UserKeyFormat    Key = "user:%s"
-	BrandKeyFormat   Key = "brand:%s"
+	AuthKeyFormat           Key = "auth:%s"
+	ForgotPasswordKeyFormat Key = "forgot-password:%s"
+	ProductKeyFormat        Key = "product:%s"
+	UserKeyFormat           Key = "user:%s"
+	BrandKeyFormat          Key = "brand:%s"
 )
 
 func GetFormattedKey(t Key, key string) string {
@@ -19,6 +20,8 @@ func GetFormattedKey(t Key, key string) string {
 		return fmt.Sprintf(string(UserKeyFormat), key)
 	case BrandKeyFormat:
 		return fmt.Sprintf(string(BrandKeyFormat), key)
+	case ForgotPasswordKeyFormat:
+		return fmt.Sprintf(string(ForgotPasswordKeyFormat), key)
 	default:
 		return ""
 	}
