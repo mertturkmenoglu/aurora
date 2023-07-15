@@ -2,7 +2,7 @@ package models
 
 type Auth struct {
 	BaseModel
-	FullName string
-	Email    string
-	Password string
+	FullName string `json:"fullName"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
