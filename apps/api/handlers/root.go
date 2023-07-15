@@ -26,6 +26,7 @@ func Bootstrap(router *gin.Engine) {
 
 	// Product routes
 	app.GET("/products/:id", GetProductById)
+	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
 
 	// Brand routes
 	app.GET("/brands/:id", GetBrandById)
