@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"aurora/services/db"
-	"aurora/services/db/models"
+	"aurora/db"
+	"aurora/db/models"
 	"github.com/google/uuid"
 	"strings"
 	"unicode"
