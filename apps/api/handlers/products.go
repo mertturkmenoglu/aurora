@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"aurora/db"
+	"aurora/db/models"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
-	"aurora/services/db"
-	"aurora/services/db/models"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -103,4 +103,58 @@ func GetProductById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": product,
 	})
+}
+
+func GetProductByCategory(c *gin.Context) {
+	categoryId := c.Query("categoryId")
+
+	if _, err := uuid.Parse(categoryId); err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "categoryId is malformed")
+		return
+	}
+
+	categoryIds := getCategoryAndSubCategoryIds(categoryId)
+
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		First(&products, "category_id IN ?", categoryIds)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func getCategoryAndSubCategoryIds(categoryId string) []string {
+	var categories []*models.Category
+	categoryIds := []string{categoryId}
+
+	for i := 0; i < 3; i++ {
+		var tmp []*models.Category
+
+		db.Client.Find(&tmp, "parent_id IN ?", categoryIds)
+		categories = append(categories, tmp...)
+		ids := make([]string, len(tmp))
+
+		for j, category := range tmp {
+			ids[j] = category.Id.String()
+		}
+
+		categoryIds = ids
+	}
+
+	categoryIds = make([]string, len(categories))
+
+	for i, category := range categories {
+		categoryIds[i] = category.Id.String()
+	}
+
+	categoryIds = append(categoryIds, categoryId)
+
+	return categoryIds
 }
