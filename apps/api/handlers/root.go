@@ -35,4 +35,7 @@ func Bootstrap(router *gin.Engine) {
 	// Brand routes
 	app.GET("/brands/:id", GetBrandById)
 	app.POST("/brands", middlewares.ParseBody[dto.CreateBrandDto](), CreateBrand)
+
+	// Reviews routes
+	app.POST("/reviews/brands", middlewares.ParseBody[dto.CreateBrandReviewDto](), middlewares.IsAuth(), CreateBrandReview)
 }
