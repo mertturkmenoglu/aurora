@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"aurora/db"
+	"aurora/db/models"
 	"aurora/services/cache"
-	"aurora/services/db"
-	"aurora/services/db/models"
 	"aurora/services/jwt"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"

@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"aurora/db"
+	"aurora/db/models"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
-	"aurora/services/db"
-	"aurora/services/db/models"
 	"aurora/services/hash"
 	"aurora/services/jwt"
 	"aurora/services/utils"
