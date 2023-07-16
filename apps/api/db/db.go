@@ -1,7 +1,7 @@
 package db
 
 import (
-	"aurora/services/db/models"
+	"aurora/db/models"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
