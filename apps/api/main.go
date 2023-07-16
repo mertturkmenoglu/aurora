@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aurora/db"
 	"aurora/handlers"
-	"aurora/services/db"
 	"github.com/gin-gonic/gin"
 )
 
