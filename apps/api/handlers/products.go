@@ -22,6 +22,13 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
+	categoryIdAsUUID, err := uuid.Parse(body.CategoryId)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "categoryId is missing or malformed")
+		return
+	}
+
 	product := &models.Product{
 		Name:          body.Name,
 		Description:   body.Description,
@@ -37,6 +44,7 @@ func CreateProduct(c *gin.Context) {
 		ShippingType:  body.ShippingType,
 		Slug:          body.Slug,
 		BrandId:       brandIdAsUUID,
+		CategoryId:    categoryIdAsUUID,
 		Images:        []models.ProductImage{},
 	}
 
@@ -118,7 +126,7 @@ func GetProductByCategory(c *gin.Context) {
 	var products []*models.Product
 	res := db.Client.
 		Preload(clause.Associations).
-		First(&products, "category_id IN ?", categoryIds)
+		Find(&products, "category_id IN ?", categoryIds)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
