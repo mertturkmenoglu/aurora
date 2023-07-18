@@ -30,6 +30,7 @@
         </nuxt-link>
       </div>
     </nav>
+    <MegaNavigation class="my-4"/>
   </header>
 </template>
 
