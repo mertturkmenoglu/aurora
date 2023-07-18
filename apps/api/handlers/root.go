@@ -52,6 +52,6 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/reviews/products/:id", GetProductReview)
 	app.GET("/reviews/brands", GetBrandReviews)
 	app.GET("/reviews/products", GetProductReviews)
-	app.DELETE("/reviews/brands/:id", DeleteBrandReview)
-	app.DELETE("/reviews/products/:id", DeleteProductReview)
+	app.DELETE("/reviews/brands/:id", middlewares.IsAuth(), DeleteBrandReview)
+	app.DELETE("/reviews/products/:id", middlewares.IsAuth(), DeleteProductReview)
 }
