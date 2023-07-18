@@ -3,6 +3,7 @@ package handlers
 import (
 	"aurora/db"
 	"aurora/db/models"
+	"aurora/handlers/dto"
 	"aurora/services/cache"
 	"aurora/services/jwt"
 	"aurora/services/utils"
@@ -39,5 +40,43 @@ func GetMe(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": user,
+	})
+}
+
+func UpdateMe(c *gin.Context) {
+	body := c.MustGet("body").(dto.UpdateUserDto)
+	reqUser := c.MustGet("user").(jwt.Payload)
+
+	res := db.Client.
+		Model(&models.User{}).
+		Where("email = ?", reqUser.Email).
+		Updates(body)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
+	})
+}
+
+func GetMyAddresses(c *gin.Context) {
+	reqUser := c.MustGet("user").(jwt.Payload)
+
+	var addresses []*models.Address
+
+	res := db.Client.
+		Where("user_id = ?", reqUser.Id).
+		Find(&addresses)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": addresses,
 	})
 }

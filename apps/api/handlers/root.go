@@ -24,8 +24,8 @@ func Bootstrap(router *gin.Engine) {
 
 	// User routes
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)
-	app.PUT("/users/me", func(c *gin.Context) {})                  // TODO: Update my profile
-	app.GET("/users/me/addresses", func(c *gin.Context) {})        // TODO: Get my addresses
+	app.PUT("/users/me", middlewares.ParseBody[dto.UpdateUserDto](), middlewares.IsAuth(), UpdateMe)
+	app.GET("/users/me/addresses", middlewares.IsAuth(), GetMyAddresses)
 	app.POST("/users/me/addresses", func(c *gin.Context) {})       // TODO: Create an address
 	app.PUT("/users/me/addresses/:id", func(c *gin.Context) {})    // TODO: Update an address
 	app.DELETE("/users/me/addresses/:id", func(c *gin.Context) {}) // TODO: Delete an address
