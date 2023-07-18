@@ -20,9 +20,16 @@ func Bootstrap(router *gin.Engine) {
 	app.POST("/auth/login", middlewares.ParseBody[dto.LoginDto](), Login)
 	app.POST("/auth/forgot-password", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
 	app.POST("/auth/password-reset", middlewares.ParseBody[dto.PasswordResetDto](), PasswordReset)
+	app.PUT("/auth/password-change", func(c *gin.Context) {}) // TODO: Change password
 
 	// User routes
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)
+	app.PUT("/users/me", func(c *gin.Context) {})                  // TODO: Update my profile
+	app.GET("/users/me/addresses", func(c *gin.Context) {})        // TODO: Get my addresses
+	app.POST("/users/me/addresses", func(c *gin.Context) {})       // TODO: Create an address
+	app.PUT("/users/me/addresses/:id", func(c *gin.Context) {})    // TODO: Update an address
+	app.DELETE("/users/me/addresses/:id", func(c *gin.Context) {}) // TODO: Delete an address
+	app.PUT("/users/me/ad-preferences", func(c *gin.Context) {})   // TODO: Update my ad preferences
 
 	// Product routes
 	app.GET("/products/:id", GetProductById)
@@ -38,4 +45,13 @@ func Bootstrap(router *gin.Engine) {
 
 	// Reviews routes
 	app.POST("/reviews/brands", middlewares.ParseBody[dto.CreateBrandReviewDto](), middlewares.IsAuth(), CreateBrandReview)
+	app.POST("/reviews/products", middlewares.ParseBody[dto.CreateProductReviewDto](), middlewares.IsAuth(), CreateProductReview)
+	app.GET("/reviews/my-reviews/brands", middlewares.IsAuth(), GetMyBrandReviews)
+	app.GET("/reviews/my-reviews/products", middlewares.IsAuth(), GetMyProductReviews)
+	app.GET("/reviews/brands/:id", GetBrandReview)
+	app.GET("/reviews/products/:id", GetProductReview)
+	app.GET("/reviews/brands", GetBrandReviews)
+	app.GET("/reviews/products", GetProductReviews)
+	app.DELETE("/reviews/brands/:id", DeleteBrandReview)
+	app.DELETE("/reviews/products/:id", DeleteProductReview)
 }
