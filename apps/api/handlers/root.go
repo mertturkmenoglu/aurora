@@ -14,6 +14,7 @@ func Bootstrap(router *gin.Engine) {
 	middlewares.Limit = ratelimit.New(1000, ratelimit.Per(time.Minute))
 
 	app.Use(middlewares.LeakBucket())
+	app.Use(middlewares.CORS())
 
 	// Auth routes
 	app.POST("/auth/register", middlewares.ParseBody[dto.RegisterDto](), Register)
