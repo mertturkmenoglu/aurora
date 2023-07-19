@@ -36,7 +36,7 @@
                     'hover:bg-gray-50',
                     'focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-50'
                 )"
-                  :href="l1.url"
+                  :href="`/category/${l1.id}`"
               >
                 <div class="ml-4">
                   <p class="text-sm font-medium text-gray-900">
