@@ -1,13 +1,14 @@
 <template>
-  <nav>
+  <nav class="border-b border-midnight">
     <div class="w-full flex items-center justify-between">
-      <div v-for="l0 in megaNavigationItems.items" class="flex">
+      <PopoverGroup v-for="l0 in megaNavigationItems.items" class="flex">
         <MegaNavigationItem :item="l0"/>
-      </div>
+      </PopoverGroup>
     </div>
   </nav>
 </template>
 
 <script lang="ts" setup>
 import {megaNavigationItems} from './items'
+import {PopoverGroup} from "@headlessui/vue";
 </script>
