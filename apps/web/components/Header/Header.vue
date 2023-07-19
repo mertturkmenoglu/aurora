@@ -1,7 +1,7 @@
 <template>
   <header>
     <Sliver v-if="showSliver" @close="showSliver = false"/>
-    <nav class="py-4 flex justify-between items-center">
+    <nav class="py-4 flex justify-between items-center mx-8">
       <div class="flex items-center">
         <nuxt-link class="flex items-center" to="/">
           <CloudIcon class="h-8 w-8 text-black"/>
@@ -30,7 +30,7 @@
         </nuxt-link>
       </div>
     </nav>
-    <MegaNavigation class="my-4"/>
+    <MegaNavigation class="my-4 mx-8"/>
   </header>
 </template>
 
