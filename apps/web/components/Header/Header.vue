@@ -4,8 +4,8 @@
     <nav class="py-4 flex justify-between items-center mx-8">
       <div class="flex items-center">
         <nuxt-link class="flex items-center" to="/">
-          <CloudIcon class="h-8 w-8 text-black"/>
-          <span class="text-xl text-black ml-2">Aurora</span>
+          <CloudIcon class="h-8 w-8 text-sky-600"/>
+          <span class="text-xl text-sky-600 ml-2">Aurora</span>
         </nuxt-link>
       </div>
       <div class="flex items-end">
@@ -41,7 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import {CloudIcon, MagnifyingGlassIcon, ShoppingBagIcon, UserIcon} from "@heroicons/vue/24/outline";
+import {MagnifyingGlassIcon, ShoppingBagIcon, UserIcon} from "@heroicons/vue/24/outline";
+import {CloudIcon} from "@heroicons/vue/24/solid";
 
 const showSliver = ref(true)
 const searchTerm = ref('')
