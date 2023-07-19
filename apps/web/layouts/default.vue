@@ -1,6 +1,6 @@
 <template>
   <Header/>
-  <main>
+  <main class="mx-8">
     <slot/>
   </main>
   <Footer/>
