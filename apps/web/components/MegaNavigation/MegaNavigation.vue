@@ -1,7 +1,7 @@
 <template>
   <nav class="border-b border-midnight">
     <div class="w-full flex items-center justify-between">
-      <PopoverGroup v-for="l0 in megaNavigationItems.items" class="flex">
+      <PopoverGroup v-for="l0 in megaNavigationItems.items" class="flex relative">
         <MegaNavigationItem :item="l0"/>
       </PopoverGroup>
     </div>
