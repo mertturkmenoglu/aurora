@@ -12,21 +12,21 @@
         <input
             v-model="searchTerm"
             :placeholder="$t('header.search')"
-            class="border-b border-b-black rounded-none py-1 px-1 pr-6"
+            class="border-b border-b-black rounded-none py-1 px-1 pr-6 hidden sm:flex"
             type="text"
         />
-        <nuxt-link :to="`/search?t=${searchTerm}`">
-          <MagnifyingGlassIcon class="h-4 w-4 -ml-4 mb-2 text-black"/>
+        <nuxt-link :to="`/search?t=${searchTerm}`" class="z-10">
+          <MagnifyingGlassIcon class="h-6 w-6 sm:h-4 sm:w-4 -ml-4 sm:mb-2 text-black"/>
         </nuxt-link>
 
         <nuxt-link class="hover:underline ml-4 flex items-end space-x-1" to="/signin">
           <UserIcon class="h-6 w-6 text-black"/>
-          <span>{{ $t('header.signIn') }}</span>
+          <span class="hidden sm:flex">{{ $t('header.signIn') }}</span>
         </nuxt-link>
 
         <nuxt-link class="flex items-end space-x-1 ml-4 hover:underline" to="/cart">
           <ShoppingBagIcon class="h-6 w-6 text-black"/>
-          <span>{{ $t('header.cart') }}</span>
+          <span class="hidden sm:flex">{{ $t('header.cart') }}</span>
         </nuxt-link>
       </div>
     </nav>
