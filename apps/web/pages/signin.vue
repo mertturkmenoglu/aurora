@@ -1,6 +1,6 @@
 <template>
-  <form class="mt-32 mx-auto max-w-sm mb-32">
-    <h2 class="text-2xl font-medium">Sign in to Aurora</h2>
+  <form class="my-32 mx-auto max-w-sm">
+    <h2 class="text-2xl font-medium">Sign in to <span class="text-sky-600">Aurora</span></h2>
 
     <div class="mt-8 w-full">
       <label class="block text-sm font-medium text-gray-700 ml-1" for="email">Email</label>
