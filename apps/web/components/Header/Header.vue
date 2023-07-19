@@ -19,12 +19,16 @@
           <MagnifyingGlassIcon class="h-6 w-6 sm:h-4 sm:w-4 -ml-4 sm:mb-2 text-black"/>
         </nuxt-link>
 
-        <nuxt-link class="hover:underline ml-4 flex items-end space-x-1" to="/signin">
+        <nuxt-link
+            class="transition duration-150 ease-in-out hover:bg-gray-100 rounded px-2 py-1 ml-4 flex items-end space-x-1"
+            to="/signin">
           <UserIcon class="h-6 w-6 text-black"/>
           <span class="hidden sm:flex">{{ $t('header.signIn') }}</span>
         </nuxt-link>
 
-        <nuxt-link class="flex items-end space-x-1 ml-4 hover:underline" to="/cart">
+        <nuxt-link
+            class="flex items-end space-x-1 ml-4 transition duration-150 ease-in-out hover:bg-gray-100 rounded px-2 py-1"
+            to="/cart">
           <ShoppingBagIcon class="h-6 w-6 text-black"/>
           <span class="hidden sm:flex">{{ $t('header.cart') }}</span>
         </nuxt-link>
