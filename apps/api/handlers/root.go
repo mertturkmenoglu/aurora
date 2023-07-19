@@ -37,6 +37,7 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/products", GetProductByCategory)
 
 	// Category routes
+	app.GET("/categories", GetCategories)
 	app.POST("/categories", middlewares.ParseBody[dto.CreateCategoryDto](), CreateCategory)
 
 	// Brand routes
