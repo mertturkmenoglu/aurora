@@ -1,5 +1,5 @@
 <template>
-  <form class="mt-8 mx-auto max-w-sm">
+  <form class="mt-32 mx-auto max-w-sm mb-32">
     <h2 class="text-2xl font-medium">Sign in to Aurora</h2>
 
     <div class="mt-8 w-full">
@@ -30,18 +30,18 @@
     </div>
 
     <div class="mt-16 w-full">
-      <button type="submit" class="bg-black text-white py-2 px-4 rounded-lg w-full">Sign in</button>
+      <button class="bg-sky-600 text-white py-2 px-4 rounded-lg w-full" type="submit">Sign in</button>
     </div>
 
     <div class="mt-8 flex flex-col space-y-2">
       <nuxt-link class="group" to="/signup">
         <span>Don't have an account?</span>
-        <span class="ml-1 group-hover:underline font-semibold">Create one</span>
+        <span class="ml-1 group-hover:underline font-semibold text-sky-600">Create one</span>
       </nuxt-link>
 
       <nuxt-link class="group" to="/forgot-password">
         <span>Forgot your password?</span>
-        <span class="ml-1 group-hover:underline font-semibold">Reset</span>
+        <span class="ml-1 group-hover:underline font-semibold text-sky-600">Reset</span>
       </nuxt-link>
     </div>
   </form>
