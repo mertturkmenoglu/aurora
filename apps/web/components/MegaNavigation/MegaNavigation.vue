@@ -1,6 +1,6 @@
 <template>
   <nav class="border-b border-midnight">
-    <div class="w-full flex items-center justify-between">
+    <div class="w-full flex items-center space-x-16">
       <PopoverGroup v-for="l0 in items.items" class="flex relative">
         <MegaNavigationItem :item="l0"/>
       </PopoverGroup>

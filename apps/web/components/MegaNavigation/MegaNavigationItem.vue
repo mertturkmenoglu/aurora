@@ -45,7 +45,7 @@
                 </div>
               </a>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 hidden sm:flex">
 
             </div>
           </div>
