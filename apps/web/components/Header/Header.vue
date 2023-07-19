@@ -34,7 +34,9 @@
         </nuxt-link>
       </div>
     </nav>
-    <MegaNavigation class="my-4 mx-8"/>
+    <ClientOnly fallback="" fallback-tag="span">
+      <MegaNavigation class="my-4 mx-8"/>
+    </ClientOnly>
   </header>
 </template>
 
