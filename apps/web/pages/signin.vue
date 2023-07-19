@@ -7,19 +7,19 @@
       <input
           id="email"
           v-model="email"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           placeholder="Email"
           type="email"
       />
     </div>
 
-    <div class="mt-4 relative w-full">
+    <div class="mt-8 relative w-full">
       <label class="block text-sm font-medium text-gray-700 ml-1" for="password">Password</label>
       <input
           id="password"
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           minlength="1"
           placeholder="Password"
       />
@@ -29,11 +29,11 @@
       </button>
     </div>
 
-    <div class="mt-16 w-full">
-      <button class="bg-sky-600 text-white py-2 px-4 rounded-lg w-full" type="submit">Sign in</button>
+    <div class="mt-8 w-full">
+      <button class="bg-sky-600 text-white py-2 px-4 rounded-full w-full" type="submit">Sign in</button>
     </div>
 
-    <div class="mt-8 flex flex-col space-y-2">
+    <div class="mt-8 flex flex-col space-y-2 text-gray-600">
       <nuxt-link class="group" to="/signup">
         <span>Don't have an account?</span>
         <span class="ml-1 group-hover:underline font-semibold text-sky-600">Create one</span>

@@ -6,7 +6,7 @@
       <input
           id="name"
           v-model="name"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           placeholder="Name"
           type="text"
       />
@@ -17,7 +17,7 @@
       <input
           id="lastName"
           v-model="lastName"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400  py-1 px-1 w-full"
           placeholder="Last Name"
           type="text"
       />
@@ -28,7 +28,7 @@
       <input
           id="email"
           v-model="email"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           placeholder="Email"
           type="email"
       />
@@ -40,7 +40,7 @@
           id="password"
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           minlength="1"
           placeholder="Password"
       />
@@ -56,7 +56,7 @@
           id="repeatPassword"
           v-model="repeatPassword"
           :type="showRepeatPassword ? 'text' : 'password'"
-          class="border border-black rounded py-1 px-1 w-full"
+          class="border-b border-gray-400 py-1 px-1 w-full"
           minlength="1"
           placeholder="Repeat Password"
       />
@@ -66,15 +66,15 @@
       </button>
     </div>
 
-    <div class="relative w-full space-y-1">
+    <div class="relative w-full space-y-1 text-gray-600 text-sm">
       <FormKit label="Send me marketing emails" type="checkbox"/>
     </div>
 
     <div class="mt-16 w-full">
-      <button class="bg-sky-600 text-white py-2 px-4 rounded-lg w-full" type="submit">Sign up</button>
+      <button class="bg-sky-600 text-white py-2 px-4 rounded-full w-full" type="submit">Sign up</button>
     </div>
 
-    <div class="mt-8 flex flex-col space-y-2">
+    <div class="mt-8 flex flex-col space-y-2 text-gray-600">
       <nuxt-link class="group" to="/forgot-password">
         <span>Forgot your password?</span>
         <span class="ml-1 group-hover:underline font-semibold text-sky-600">Reset</span>
