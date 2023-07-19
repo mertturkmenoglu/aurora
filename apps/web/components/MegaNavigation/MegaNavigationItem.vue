@@ -33,13 +33,13 @@
                   :key="l1.name"
                   :class="clsx(
                     '-m-3 flex items-center rounded-lg p-4', 'transition duration-150 ease-in-out',
-                    'hover:bg-gray-50',
+                    'hover:bg-sky-600/10 group',
                     'focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-50'
                 )"
                   :href="`/category/${l1.id}`"
               >
                 <div class="ml-4">
-                  <p class="text-sm font-medium text-gray-900">
+                  <p class="text-sm font-medium text-gray-900 group-hover:text-sky-600">
                     {{ l1.name }}
                   </p>
                 </div>
@@ -52,10 +52,10 @@
           <div class="bg-gray-50 p-4">
             <nuxt-link
                 :href="`/category/${item.id}`"
-                class="flow-root rounded-md px-2 py-2 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-50"
+                class="flow-root group rounded-md px-2 py-2 transition duration-150 ease-in-out hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-50"
             >
               <span class="block text-sm text-gray-500">
-                See all {{ item.name }} products
+                See all <span class="group-hover:text-sky-600">{{ item.name }}</span> products
               </span>
             </nuxt-link>
           </div>
