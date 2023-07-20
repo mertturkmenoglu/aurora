@@ -126,6 +126,8 @@ func GetProductByCategory(c *gin.Context) {
 	var products []*models.Product
 	res := db.Client.
 		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
 		Find(&products, "category_id IN ?", categoryIds)
 
 	if res.Error != nil {
