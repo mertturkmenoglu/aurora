@@ -38,3 +38,55 @@ export type Address = {
     type: string;
     zipCode: string;
 }
+
+export type ProductsDto = Dto<Product[]>
+
+export type Product = {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
+    name: string;
+    description: string;
+    currentPrice: number;
+    oldPrice: number;
+    inventory: number;
+    images: ProductImage[];
+    isFeatured: boolean;
+    isNew: boolean;
+    isOnSale: boolean;
+    isPopular: boolean;
+    shippingPrice: number;
+    shippingTime: string;
+    shippingType: string;
+    slug: string;
+    brandId: string;
+    brand: Brand;
+    categoryId: string;
+    category: Category;
+}
+
+export type ProductImage = {
+    id: string;
+    productId: string;
+    url: string;
+}
+
+export type Brand = {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
+    name: string;
+    description: string;
+}
+
+export type Category = {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string;
+    name: string;
+    parentId: string | null;
+    parent: Category | null;
+}
