@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import {MagnifyingGlassIcon, ShoppingBagIcon, UserIcon} from "@heroicons/vue/24/outline";
+import {MagnifyingGlassIcon, ShoppingBagIcon} from "@heroicons/vue/24/outline";
 import {CloudIcon} from "@heroicons/vue/24/solid";
 
 const showSliver = ref(true)
