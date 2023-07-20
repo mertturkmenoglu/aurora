@@ -1,5 +1,5 @@
 <template>
-  <form class="my-32 mx-auto max-w-sm">
+  <form class="my-32 mx-auto max-w-sm" @submit.prevent="onFormSubmit">
     <h2 class="text-2xl font-medium">Sign in to <span class="text-sky-600">Aurora</span></h2>
 
     <div class="mt-8 w-full">
@@ -49,8 +49,32 @@
 
 <script lang="ts" setup>
 import {EyeIcon, EyeSlashIcon} from "@heroicons/vue/24/outline";
+import {api} from "~/utils/api";
+import type {LoginResponseDto} from "~/utils/dto";
+import {FetchError} from "ofetch";
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
+
+const onFormSubmit = async () => {
+  try {
+    const {data} = await api<LoginResponseDto>('/auth/login', {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value
+      }
+    })
+
+    localStorage.setItem("accessToken", data.accessToken)
+    localStorage.setItem("refreshToken", data.refreshToken)
+
+    window.location.href = "/"
+  } catch (e) {
+    if (e instanceof FetchError) {
+      console.error(e.response?._data.error)
+    }
+  }
+}
 </script>
