@@ -125,9 +125,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.Header("x-access-token", token)
-	c.Header("x-refresh-token", token)
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"accessToken":  token,
+			"refreshToken": token,
+		},
+	})
 }
 
 func ForgotPassword(c *gin.Context) {
