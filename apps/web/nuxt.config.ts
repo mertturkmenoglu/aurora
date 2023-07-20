@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-nocheck
 export default defineNuxtConfig({
+    routeRules: {
+        "/my-account/**": {ssr: false},
+    },
     devtools: {enabled: true},
     modules: [
         '@nuxtjs/tailwindcss',
