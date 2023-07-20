@@ -3,7 +3,6 @@ package handlers
 import (
 	"aurora/handlers/dto"
 	"aurora/middlewares"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/ratelimit"
 	"time"
@@ -15,7 +14,6 @@ func Bootstrap(router *gin.Engine) {
 	middlewares.Limit = ratelimit.New(1000, ratelimit.Per(time.Minute))
 
 	app.Use(middlewares.LeakBucket())
-	app.Use(cors.Default())
 
 	// Auth routes
 	app.POST("/auth/register", middlewares.ParseBody[dto.RegisterDto](), Register)
