@@ -12,7 +12,7 @@ import (
 )
 
 func GetMe(c *gin.Context) {
-	reqUser := c.MustGet("user").(jwt.Payload)
+	reqUser := c.MustGet("user").(*jwt.Payload)
 	email := reqUser.Email
 
 	key := cache.GetFormattedKey(cache.UserKeyFormat, email)
@@ -45,7 +45,7 @@ func GetMe(c *gin.Context) {
 
 func UpdateMe(c *gin.Context) {
 	body := c.MustGet("body").(dto.UpdateUserDto)
-	reqUser := c.MustGet("user").(jwt.Payload)
+	reqUser := c.MustGet("user").(*jwt.Payload)
 
 	res := db.Client.
 		Model(&models.User{}).
@@ -63,7 +63,7 @@ func UpdateMe(c *gin.Context) {
 }
 
 func GetMyAddresses(c *gin.Context) {
-	reqUser := c.MustGet("user").(jwt.Payload)
+	reqUser := c.MustGet("user").(*jwt.Payload)
 
 	var addresses []*models.Address
 
