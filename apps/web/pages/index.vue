@@ -1,4 +1,5 @@
 <template>
-  <h2>{{ $t('home.welcomeText') }} </h2>
-  <nuxt-img src="https://fastly.picsum.photos/id/58/1280/853.jpg?hmac=YO3QnOm9TpyM5DqsJjoM4CHg8oIq4cMWLpd9ALoP908"/>
+  <div v-for="i in 50">
+    <span>    lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. {{ i }}</span>
+  </div>
 </template>

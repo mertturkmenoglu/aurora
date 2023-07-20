@@ -1,10 +1,11 @@
 package db
 
 import (
-	"aurora/services/db/models"
+	"aurora/db/models"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 )
 
@@ -17,6 +18,7 @@ func Init() {
 	dbname, dbnameOk := os.LookupEnv("DB_NAME")
 	port, portOk := os.LookupEnv("DB_PORT")
 	timezone, timezoneOk := os.LookupEnv("DB_TIMEZONE")
+	debug := os.Getenv("DEBUG")
 
 	if !hostOk || !userOk || !passwordOk || !dbnameOk || !portOk || !timezoneOk {
 		panic("Missing database environment variables!")
@@ -24,7 +26,15 @@ func Init() {
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s", host, user, password, dbname, port, timezone)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	logLevel := logger.Silent
+
+	if debug == "true" {
+		logLevel = logger.Info
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
 
 	if err != nil {
 		panic(err)
@@ -42,5 +52,8 @@ func AutoMigrate() error {
 		&models.ProductImage{},
 		&models.AdPreference{},
 		&models.Address{},
+		&models.Category{},
+		&models.BrandReview{},
+		&models.ProductReview{},
 	)
 }

@@ -19,6 +19,10 @@
   },
   "dependencies": {
     "@formkit/nuxt": "^0.17.4",
-    "@heroicons/vue": "^2.0.18"
+    "@headlessui/vue": "^1.7.14",
+    "@heroicons/vue": "^2.0.18",
+    "clsx": "^2.0.0",
+    "swiper": "^10.0.4",
+    "tailwind-merge": "^1.14.0"
   }
 }

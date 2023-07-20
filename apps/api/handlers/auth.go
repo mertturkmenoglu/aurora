@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"aurora/db"
+	"aurora/db/models"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
-	"aurora/services/db"
-	"aurora/services/db/models"
 	"aurora/services/hash"
 	"aurora/services/jwt"
 	"aurora/services/utils"
@@ -125,9 +125,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.Header("x-access-token", token)
-	c.Header("x-refresh-token", token)
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"accessToken":  token,
+			"refreshToken": token,
+		},
+	})
 }
 
 func ForgotPassword(c *gin.Context) {

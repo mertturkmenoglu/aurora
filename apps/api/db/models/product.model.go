@@ -20,6 +20,8 @@ type Product struct {
 	Slug          string         `json:"slug"`
 	BrandId       uuid.UUID      `json:"brandId"`
 	Brand         Brand          `json:"brand"`
+	CategoryId    uuid.UUID      `json:"categoryId"`
+	Category      Category       `json:"category"`
 }
 
 type ProductImage struct {
