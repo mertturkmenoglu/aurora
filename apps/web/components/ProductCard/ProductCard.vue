@@ -1,29 +1,31 @@
 <template>
-  <nuxt-link
+  <div
       :class="clsx(
           {
           'hover:scale-[102%] transition-all ease-in duration-200 hover:border hover:border-sky-600': hoverable,
           },
-          ' p-4 flex flex-col rounded-lg group'
+          'p-4 flex flex-col rounded-lg group'
       )"
-      :to="`/products/${product.id}`"
   >
     <div class="flex items-center justify-between">
       <span class="font-bold text-sm text-sky-600">{{ productMessage }}</span>
-      <button>
-        <HeartIcon class="w-7 h-6 text-gray-600 cursor-pointer"/>
-      </button>
+      <ClientOnly fallback="" fallback-tag="span">
+        <FavoriteButton :productId="product.id" class="z-10"/>
+      </ClientOnly>
     </div>
-    <img :src="image" alt="" class="w-64 h-48 sm:w-64 md:h-96 object-cover mt-2 mx-auto" loading="lazy">
-    <div class="mt-2">
-      <span class="font-bold text-green-600">{{ product.currentPrice }}$</span>
-      <span v-if="product.currentPrice !== product.oldPrice" class="font-light line-through ml-2">
+
+    <nuxt-link :to="`/products/${product.id}`" class="flex flex-col">
+      <img :src="image" alt="" class="w-64 h-48 sm:w-64 md:h-96 object-cover mt-2 mx-auto" loading="lazy">
+      <div class="mt-2">
+        <span class="font-bold text-green-600">{{ product.currentPrice }}$</span>
+        <span v-if="product.currentPrice !== product.oldPrice" class="font-light line-through ml-2">
             {{ product.oldPrice }}$
         </span>
-    </div>
-    <span class="text-gray-600 text-sm mt-2">{{ product.category.name }}</span>
-    <span class="font-bold mt-2 line-clamp-2 leading-4 h-8">{{ product.name }}</span>
-    <span class="font-light text-sm mt-2">By {{ product.brand.name }}</span>
+      </div>
+      <span class="text-gray-600 text-sm mt-2">{{ product.category.name }}</span>
+      <span class="font-bold mt-2 line-clamp-2 leading-4 h-8">{{ product.name }}</span>
+      <span class="font-light text-sm mt-2">By {{ product.brand.name }}</span>
+    </nuxt-link>
 
     <button
         :class="clsx(
@@ -35,8 +37,7 @@
         )">
       Add to cart
     </button>
-  </nuxt-link>
-
+  </div>
 </template>
 
 <script lang="ts" setup>
