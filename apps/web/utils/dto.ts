@@ -40,6 +40,7 @@ export type Address = {
 }
 
 export type ProductsDto = Dto<Product[]>
+export type ProductDto = Dto<Product>
 
 export type Product = {
     id: string;
