@@ -14,7 +14,7 @@
         <HeartIcon class="w-7 h-6 text-gray-600 cursor-pointer"/>
       </button>
     </div>
-    <img :src="image" alt="" class="w-64 h-48 sm:w-64 md:h-96 object-cover mt-2 mx-auto">
+    <img :src="image" alt="" class="w-64 h-48 sm:w-64 md:h-96 object-cover mt-2 mx-auto" loading="lazy">
     <div class="mt-2">
       <span class="font-bold text-green-600">{{ product.currentPrice }}$</span>
       <span v-if="product.currentPrice !== product.oldPrice" class="font-light line-through ml-2">
