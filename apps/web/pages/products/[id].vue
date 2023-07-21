@@ -227,7 +227,7 @@ const categories = computed(() => {
     node = node.parent;
   }
 
-  return arr;
+  return arr.reverse();
 })
 
 const breadcrumbLinks = computed(() => {
