@@ -71,7 +71,9 @@ func AddFavorite(c *gin.Context) {
 		ProductId: productIdAsUUID,
 	}
 
-	res = db.Client.Create(&favorite)
+	res = db.Client.
+		Preload(clause.Associations).
+		Create(&favorite)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -100,6 +102,7 @@ func DeleteFavorite(c *gin.Context) {
 	var favorite *models.Favorite
 
 	res = db.Client.
+		Preload(clause.Associations).
 		Where("user_id = ? AND id = ?", user.Id, id).
 		Delete(&favorite)
 
@@ -129,6 +132,7 @@ func DeleteAllFavorites(c *gin.Context) {
 	var favorites []*models.Favorite
 
 	res = db.Client.
+		Preload(clause.Associations).
 		Where("user_id = ?", user.Id).
 		Delete(&favorites)
 
