@@ -3,7 +3,8 @@
 export default defineNuxtConfig({
     routeRules: {
         "/my-account/**": {ssr: false},
-        "/": {ssr: false}
+        "/": {ssr: false},
+        "/products/**": {ssr: false},
     },
     devtools: {enabled: true},
     modules: [
