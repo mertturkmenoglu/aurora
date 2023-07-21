@@ -4,12 +4,41 @@
 
     <div class="mt-8 w-full">
       <div class="grid grid-cols-9 w-full">
-        <div class="image col-span-6 flex justify-center p-8">
-          <img
-              :src="product.images[0].url"
-              alt=""
-              class="h-[32rem] w-96 object-cover"
-          />
+        <div class="col-span-6 p-8">
+          <!-- Image -->
+          <swiper
+              :modules="modules"
+              :navigation="true"
+              :spaceBetween="10"
+              :style="{
+                '--swiper-navigation-color': '#000',
+                '--swiper-pagination-color': '#000',
+              }"
+              :thumbs="{ swiper: thumbsSwiper }"
+              class="h-[48rem] w-[48rem] object-contain"
+          >
+            <swiper-slide v-for="image in product.images">
+              <img :src="image.url" alt='' class="w-full h-full"/>
+            </swiper-slide>
+          </swiper>
+          <swiper
+              :freeMode="true"
+              :modules="thumbsModules"
+              :scrollbar="{
+                enabled: true,
+                draggable: true
+              }"
+              :slidesPerView="5"
+              :spaceBetween="50"
+              :watchSlidesProgress="true"
+              class=" object-cover mt-4 w-full"
+              @swiper="setThumbsSwiper"
+          >
+            <swiper-slide v-for="image in product.images">
+              <img :src="image.url" alt='' loading="lazy"/>
+            </swiper-slide>
+          </swiper>
+
         </div>
         <div class="col-span-3 rounded-lg shadow-md flex flex-col p-4 bg-white">
           <!-- Message and fav -->
@@ -186,6 +215,27 @@ import {HeartIcon, TruckIcon, StarIcon as EmptyStarIcon} from "@heroicons/vue/24
 import {StarIcon as FilledStarIcon, MapPinIcon} from "@heroicons/vue/24/solid";
 import clsx from "clsx";
 import {useProductMessage} from "~/composables/useProductMessage";
+import {Swiper as SwiperClass} from "swiper"
+import {Swiper, SwiperSlide} from 'swiper/vue';
+
+// Import Swiper styles
+import 'swiper/css';
+
+import "swiper/css/free-mode"
+import "swiper/css/navigation"
+import "swiper/css/thumbs"
+
+
+// import required modules
+import {FreeMode, Navigation, Thumbs, Scrollbar} from 'swiper/modules';
+
+const thumbsSwiper = ref<SwiperClass | null>(null);
+const modules = [Navigation, Thumbs, FreeMode];
+const thumbsModules = [...modules, Scrollbar];
+
+function setThumbsSwiper(swiper: SwiperClass) {
+  thumbsSwiper.value = swiper;
+}
 
 const route = useRoute();
 
