@@ -67,4 +67,7 @@ func Bootstrap(router *gin.Engine) {
 	app.POST("/favorites", middlewares.ParseBody[dto.AddFavoriteDto](), middlewares.IsAuth(), AddFavorite)
 	app.DELETE("/favorites/:id", middlewares.IsAuth(), DeleteFavorite)
 	app.DELETE("/favorites", middlewares.IsAuth(), DeleteAllFavorites)
+
+	// Search routes
+	app.GET("/search", SearchProducts)
 }
