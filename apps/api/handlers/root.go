@@ -32,14 +32,15 @@ func Bootstrap(router *gin.Engine) {
 	app.PUT("/users/me/ad-preferences", func(c *gin.Context) {})   // TODO: Update my ad preferences
 
 	// Product routes
-	app.GET("/products/:id", GetProductById)
-	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
-	app.GET("/products", GetProductByCategory)
+	app.GET("/products/all", GetAllProducts)
 	app.GET("/products/featured", GetFeaturedProducts)
 	app.GET("/products/new", GetNewProducts)
 	app.GET("/products/sale", GetSaleProducts)
 	app.GET("/products/popular", GetPopularProducts)
 	app.GET("/products/free-shipping", GetFreeShippingProducts)
+	app.GET("/products/:id", GetProductById)
+	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
+	app.GET("/products", GetProductByCategory)
 
 	// Category routes
 	app.GET("/categories", GetCategories)

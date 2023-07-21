@@ -240,6 +240,25 @@ func GetFreeShippingProducts(c *gin.Context) {
 	})
 }
 
+func GetAllProducts(c *gin.Context) {
+	var products []*models.Product
+
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Find(&products)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
 func getCategoryAndSubCategoryIds(categoryId string) []string {
 	var categories []*models.Category
 	categoryIds := []string{categoryId}
