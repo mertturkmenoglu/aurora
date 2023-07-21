@@ -165,6 +165,26 @@
           {{ product.description }}
         </p>
       </div>
+
+      <div v-if="featuredProducts" class="mt-8">
+        <h2 class="font-bold text-xl text-black">
+          Featured Products
+        </h2>
+        <swiper
+            :modules="swiperModules"
+            :slides-per-view="5"
+            :space-between="50"
+            class="mt-8"
+            navigation
+        >
+          <swiper-slide v-for="featuredProduct in featuredProducts">
+            <ProductCard
+                :hoverable="false"
+                :product="featuredProduct"
+            />
+          </swiper-slide>
+        </swiper>
+      </div>
     </div>
   </div>
 
@@ -174,14 +194,23 @@
 </template>
 
 <script lang="ts" setup>
-import {Category, Product, ProductDto} from "~/utils/dto";
+import {Category, Product, ProductDto, ProductsDto} from "~/utils/dto";
 import {BASE_URL} from "~/utils/api";
 import {HeartIcon, TruckIcon, StarIcon as EmptyStarIcon} from "@heroicons/vue/24/outline";
 import {StarIcon as FilledStarIcon, MapPinIcon} from "@heroicons/vue/24/solid";
 import clsx from "clsx";
 import {useProductMessage} from "~/composables/useProductMessage";
+import {Swiper, SwiperSlide} from "swiper/vue";
+import {Navigation, Pagination, Scrollbar, A11y} from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 
 const route = useRoute();
+
+const swiperModules = [Navigation, Pagination, Scrollbar, A11y]
 
 const styleIndex = ref(0)
 const sizeIndex = ref(0)
@@ -189,6 +218,12 @@ const sizeIndex = ref(0)
 const {
   data,
 } = await useFetch<ProductDto>(`${BASE_URL}/products/${route.params.id}`);
+
+const {
+  data: featuredProductsData,
+} = await useFetch<ProductsDto>(`${BASE_URL}/products/featured`);
+
+const featuredProducts = featuredProductsData.value?.data ?? [];
 
 const product: Product | undefined = data.value?.data
 
