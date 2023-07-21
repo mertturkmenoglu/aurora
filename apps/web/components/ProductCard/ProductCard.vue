@@ -53,7 +53,6 @@ const {product, hoverable = true} = defineProps<{
 const productMessage = useProductMessage(product);
 
 const image = computed(() => {
-  console.log(product)
   if (!product.images.length) {
     return ''
   }
