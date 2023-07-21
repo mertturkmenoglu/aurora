@@ -32,7 +32,7 @@ func IsAuth() gin.HandlerFunc {
 		cacheResult, err := cache.HGet[jwt.Payload](key)
 
 		if err == nil && cacheResult != nil {
-			c.Set("user", cacheResult)
+			c.Set("user", *cacheResult)
 			c.Next()
 			return
 		}
