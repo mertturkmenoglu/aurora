@@ -9,7 +9,7 @@
 import {HeartIcon as HeartIconEmpty} from "@heroicons/vue/24/outline";
 import {HeartIcon as HeartIconFilled} from "@heroicons/vue/24/solid";
 
-const fav = ref(FavoriteManager.getInstance())
+const {data: fav} = await useAsyncData('fav', () => FavoriteManager.getAsyncInstance())
 const isFavorite = ref(false);
 const isValid = ref(true);
 
@@ -18,6 +18,10 @@ const {productId} = defineProps<{
 }>();
 
 async function onFavoriteClick() {
+  if (!fav || !fav.value) {
+    return;
+  }
+
   if (isFavorite.value) {
     await fav.value.removeFromFavorite(productId)
   } else {
@@ -27,11 +31,9 @@ async function onFavoriteClick() {
   isValid.value = false;
 }
 
-watch([isValid], () => {
-  isFavorite.value = fav.value.isFavorite(productId)
+watch([isValid, fav], () => {
+  if (fav.value) {
+    isFavorite.value = fav.value.isFavorite(productId)
+  }
 }, {immediate: true})
-
-onMounted(() => {
-  isFavorite.value = fav.value.isFavorite(productId)
-})
 </script>

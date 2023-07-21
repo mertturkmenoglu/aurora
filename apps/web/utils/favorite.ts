@@ -29,17 +29,14 @@ async function addToFavorite(productId: string) {
     }
 }
 
-async function removeFromFavorite(productId: string) {
+async function removeFromFavorite(favoriteId: string) {
     try {
-        const res = await api<Dto<Favorite>>('/favorites', {
+        const res = await api<Dto<Favorite>>(`/favorites/${favoriteId}`, {
             method: 'DELETE',
             headers: {
                 'x-access-token': localStorage.getItem('accessToken') || '',
                 'x-refresh-token': localStorage.getItem('refreshToken') || '',
             },
-            body: {
-                productId,
-            }
         });
 
         return res.data
@@ -91,6 +88,23 @@ export class FavoriteManager {
         return FavoriteManager.instance;
     }
 
+    public static async getAsyncInstance() {
+        if (!FavoriteManager.instance) {
+            FavoriteManager.instance = new FavoriteManager();
+            await FavoriteManager.instance.invalidate();
+        }
+
+        return FavoriteManager.instance;
+    }
+
+    public async invalidate() {
+        const res = await this.getFavorites();
+
+        if (res) {
+            this.writeFavoritesToSessionStorage(res);
+        }
+    }
+
     public async getFavorites() {
         const res = await getFavorites();
 
@@ -110,7 +124,15 @@ export class FavoriteManager {
     }
 
     public async removeFromFavorite(productId: string) {
-        const res = await removeFromFavorite(productId);
+        const favs = this.readFavoritesFromSessionStorage();
+
+        const fav = favs.find(f => f.productId === productId);
+
+        if (!fav) {
+            return;
+        }
+
+        const res = await removeFromFavorite(fav.id);
 
         if (res) {
             this.removeFromSessionStorage(res);
@@ -123,18 +145,8 @@ export class FavoriteManager {
         return favorites.some(f => f.productId === productId);
     }
 
-    public async invalidate() {
-        localStorage.removeItem('favorites');
-
-        const res = await this.getFavorites();
-
-        if (res) {
-            this.writeFavoritesToSessionStorage(res);
-        }
-    }
-
     private readFavoritesFromSessionStorage(): Favorite[] {
-        const serialized = localStorage.getItem('favorites');
+        const serialized = sessionStorage.getItem('favorites');
 
         if (!serialized) {
             return [];
@@ -148,7 +160,7 @@ export class FavoriteManager {
     }
 
     private writeFavoritesToSessionStorage(favorites: Favorite[]) {
-        localStorage.setItem('favorites', JSON.stringify(favorites));
+        sessionStorage.setItem('favorites', JSON.stringify(favorites));
     }
 
     private appendSessionStorage(data: Favorite) {
