@@ -40,7 +40,7 @@
           </swiper>
 
         </div>
-        <div class="col-span-3 rounded-lg shadow-md flex flex-col p-4 bg-white">
+        <div class="col-span-3 rounded-lg shadow-md flex flex-col p-4 bg-white h-min">
           <!-- Message and fav -->
           <div class="flex items-center justify-between">
             <span class="font-bold text-sm text-sky-600">{{ productMessage }}</span>
