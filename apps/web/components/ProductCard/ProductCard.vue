@@ -29,20 +29,11 @@
 <script lang="ts" setup>
 import {Product} from "~/utils/dto";
 import {HeartIcon} from "@heroicons/vue/24/outline"
+import {useProductMessage} from "~/composables/useProductMessage";
 
 const {product} = defineProps<{
   product: Product
 }>();
 
-const productMessage = computed(() => {
-  if (product.isPopular) {
-    return 'Popular'
-  } else if (product.isNew) {
-    return 'New'
-  } else if (product.isOnSale) {
-    return 'On Sale'
-  } else {
-    return ''
-  }
-})
+const productMessage = useProductMessage(product);
 </script>

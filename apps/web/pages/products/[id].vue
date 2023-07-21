@@ -179,6 +179,7 @@ import {BASE_URL} from "~/utils/api";
 import {HeartIcon, TruckIcon, StarIcon as EmptyStarIcon} from "@heroicons/vue/24/outline";
 import {StarIcon as FilledStarIcon, MapPinIcon} from "@heroicons/vue/24/solid";
 import clsx from "clsx";
+import {useProductMessage} from "~/composables/useProductMessage";
 
 const route = useRoute();
 
@@ -224,21 +225,7 @@ const breadcrumbLinks = computed(() => {
   }))
 })
 
-const productMessage = computed(() => {
-  if (!product) {
-    return ''
-  }
-
-  if (product.isPopular) {
-    return 'Popular'
-  } else if (product.isNew) {
-    return 'New'
-  } else if (product.isOnSale) {
-    return 'On Sale'
-  } else {
-    return ''
-  }
-})
+const productMessage = product ? useProductMessage(product) : '';
 
 const isCriticalStock = computed(() => {
   if (!product) {
