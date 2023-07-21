@@ -11,7 +11,7 @@ import {ProductsDto, Product} from "~/utils/dto";
 
 const {
   data,
-} = await useFetch<ProductsDto>('http://localhost:5000/api/v1/products?categoryId=e2c46077-b90f-449d-a12b-d1280d3ee42b');
+} = await useFetch<ProductsDto>(`${BASE_URL}/products/all`);
 
 const products: Product[] = data.value?.data || [];
 </script>
