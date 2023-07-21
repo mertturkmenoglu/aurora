@@ -123,6 +123,16 @@ export class FavoriteManager {
         return favorites.some(f => f.productId === productId);
     }
 
+    public async invalidate() {
+        localStorage.removeItem('favorites');
+
+        const res = await this.getFavorites();
+
+        if (res) {
+            this.writeFavoritesToSessionStorage(res);
+        }
+    }
+
     private readFavoritesFromSessionStorage(): Favorite[] {
         const serialized = localStorage.getItem('favorites');
 

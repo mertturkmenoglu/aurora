@@ -44,9 +44,9 @@
           <!-- Message and fav -->
           <div class="flex items-center justify-between">
             <span class="font-bold text-sm text-sky-600">{{ productMessage }}</span>
-            <button>
-              <HeartIcon class="w-7 h-6 text-gray-600 cursor-pointer"/>
-            </button>
+            <ClientOnly fallback="" fallback-tag="span">
+              <FavoriteButton :productId="product.id" class="z-10"/>
+            </ClientOnly>
           </div>
 
           <!-- Brand -->
