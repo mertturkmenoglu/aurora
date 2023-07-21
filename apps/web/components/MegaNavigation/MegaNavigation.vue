@@ -16,20 +16,20 @@ const items = ref<MegaNavigationItems>({
   items: []
 })
 
-const serialized = sessionStorage.getItem("megaNavigation")
+onMounted(() => {
+  const serialized = sessionStorage.getItem("megaNavigation")
 
-if (serialized) {
-  items.value = JSON.parse(serialized)
-} else {
-  const {data, pending} = await useFetch<{ data: MegaNavigationItems }>("http://localhost:5000/api/v1/categories")
+  if (serialized) {
+    items.value = JSON.parse(serialized)
+    return
+  }
 
-  watch([pending, data], () => {
-    if (!pending.value && data.value) {
-      items.value = data.value.data
-      sessionStorage.setItem("megaNavigation", JSON.stringify(data.value.data))
-    }
-  })
-}
-
-
+  api<{
+    data: MegaNavigationItems
+  }>("/categories")
+      .then(({data}) => {
+        items.value = data
+        sessionStorage.setItem("megaNavigation", JSON.stringify(data))
+      })
+})
 </script>
