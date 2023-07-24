@@ -9,6 +9,7 @@ import (
 func ParseBody[T any]() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var body T
+
 		if err := c.ShouldBindJSON(&body); err != nil {
 			utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 			c.Abort()
