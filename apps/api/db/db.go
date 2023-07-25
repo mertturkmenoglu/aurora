@@ -56,5 +56,7 @@ func AutoMigrate() error {
 		&models.BrandReview{},
 		&models.ProductReview{},
 		&models.Favorite{},
+		&models.ProductStyle{},
+		&models.ProductSize{},
 	)
 }

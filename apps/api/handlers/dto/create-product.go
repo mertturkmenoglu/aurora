@@ -17,8 +17,18 @@ type CreateProductDto struct {
 	Slug          string            `json:"slug" binding:"required"`
 	BrandId       string            `json:"brandId" binding:"required"`
 	CategoryId    string            `json:"categoryId" binding:"required"`
+	ProductStyles []ProductStyleDto `json:"productStyles" binding:"required"`
+	ProductSizes  []ProductSizeDto  `json:"productSizes" binding:"required"`
 }
 
 type ProductImageDto struct {
 	Url string `json:"url" binding:"required"`
+}
+
+type ProductStyleDto struct {
+	Name string `json:"name" binding:"required"`
+}
+
+type ProductSizeDto struct {
+	Name string `json:"name" binding:"required"`
 }

@@ -46,6 +46,8 @@ func CreateProduct(c *gin.Context) {
 		BrandId:       brandIdAsUUID,
 		CategoryId:    categoryIdAsUUID,
 		Images:        []models.ProductImage{},
+		ProductStyles: []models.ProductStyle{},
+		ProductSizes:  []models.ProductSize{},
 	}
 
 	res := db.Client.Create(product)
@@ -65,6 +67,38 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	res = db.Client.Create(&images)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	styles := make([]*models.ProductStyle, len(body.ProductStyles))
+
+	for i, style := range body.ProductStyles {
+		styles[i] = &models.ProductStyle{
+			ProductId: product.Id,
+			Name:      style.Name,
+		}
+	}
+
+	res = db.Client.Create(&styles)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	sizes := make([]*models.ProductSize, len(body.ProductSizes))
+
+	for i, size := range body.ProductSizes {
+		sizes[i] = &models.ProductSize{
+			ProductId: product.Id,
+			Name:      size.Name,
+		}
+	}
+
+	res = db.Client.Create(&sizes)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
