@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / {{ product.name }}</title>
+  </Head>
   <div v-if="product" class="container mx-auto my-8">
     <Breadcrumbs :items="breadcrumbLinks"/>
 
@@ -211,7 +214,7 @@
 <script lang="ts" setup>
 import {Category, Product, ProductDto, ProductsDto} from "~/utils/dto";
 import {BASE_URL} from "~/utils/api";
-import {HeartIcon, TruckIcon, StarIcon as EmptyStarIcon} from "@heroicons/vue/24/outline";
+import {TruckIcon, StarIcon as EmptyStarIcon} from "@heroicons/vue/24/outline";
 import {StarIcon as FilledStarIcon, MapPinIcon} from "@heroicons/vue/24/solid";
 import clsx from "clsx";
 import {useProductMessage} from "~/composables/useProductMessage";

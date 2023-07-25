@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / My Account</title>
+  </Head>
   <div v-if="isAuthenticated && user" class="mx-auto my-32 container">
     <h1 class="text-4xl font-bold text-gray-900">
       Welcome, <span class="text-sky-600">{{ user.fullName }}</span>

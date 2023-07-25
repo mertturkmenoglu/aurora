@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / My Account / Addresses</title>
+  </Head>
   <div v-if="isAuthenticated && user" class="container mx-auto my-16">
     <nuxt-link class="flex items-center text-sky-600 text-sm hover:underline" to="/my-account">
       <ChevronLeftIcon class="w-6 h-6 mr-2"/>

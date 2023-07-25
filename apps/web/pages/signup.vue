@@ -1,4 +1,8 @@
 <template>
+  <Head>
+    <title>Aurora / Sign Up</title>
+  </Head>
+
   <form class="my-32 mx-auto max-w-sm space-y-4">
     <h2 class="text-2xl font-medium">Create an <span class="text-sky-600">Aurora</span> account</h2>
     <div class="w-full space-y-1">

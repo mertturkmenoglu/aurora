@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / Categories</title>
+  </Head>
   <div v-if="products" class="container gap-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto xl:px-32 my-16">
     <div v-for="product in products" :key="product.id">
       <ProductCard :product="product"/>

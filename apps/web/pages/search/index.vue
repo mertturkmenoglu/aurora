@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / Search / {{ q }}</title>
+  </Head>
   <div v-if="q && data && results" class="container mx-auto">
     <h2 class="font-bold text-2xl mt-16">Search results for "{{ q }}"</h2>
     <div class="gap-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 my-16">

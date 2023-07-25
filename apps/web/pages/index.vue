@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / Home</title>
+  </Head>
 
   <div class="container space-y-16 mx-auto">
     <ProductCarousel
