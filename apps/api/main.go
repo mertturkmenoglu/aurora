@@ -10,7 +10,12 @@ import (
 func main() {
 	router := gin.Default()
 	err := router.SetTrustedProxies(nil)
-	router.Use(cors.Default())
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AddAllowHeaders("x-access-token")
+	corsConfig.AddAllowHeaders("x-refresh-token")
+	corsConfig.AllowAllOrigins = true
+
+	router.Use(cors.New(corsConfig))
 
 	if err != nil {
 		panic(err.Error())

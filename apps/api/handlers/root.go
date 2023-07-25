@@ -32,6 +32,12 @@ func Bootstrap(router *gin.Engine) {
 	app.PUT("/users/me/ad-preferences", func(c *gin.Context) {})   // TODO: Update my ad preferences
 
 	// Product routes
+	app.GET("/products/all", GetAllProducts)
+	app.GET("/products/featured", GetFeaturedProducts)
+	app.GET("/products/new", GetNewProducts)
+	app.GET("/products/sale", GetSaleProducts)
+	app.GET("/products/popular", GetPopularProducts)
+	app.GET("/products/free-shipping", GetFreeShippingProducts)
 	app.GET("/products/:id", GetProductById)
 	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
 	app.GET("/products", GetProductByCategory)
@@ -55,4 +61,13 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/reviews/products", GetProductReviews)
 	app.DELETE("/reviews/brands/:id", middlewares.IsAuth(), DeleteBrandReview)
 	app.DELETE("/reviews/products/:id", middlewares.IsAuth(), DeleteProductReview)
+
+	// Favorites routes
+	app.GET("/favorites", middlewares.IsAuth(), GetMyFavorites)
+	app.POST("/favorites", middlewares.ParseBody[dto.AddFavoriteDto](), middlewares.IsAuth(), AddFavorite)
+	app.DELETE("/favorites/:id", middlewares.IsAuth(), DeleteFavorite)
+	app.DELETE("/favorites", middlewares.IsAuth(), DeleteAllFavorites)
+
+	// Search routes
+	app.GET("/search", SearchProducts)
 }

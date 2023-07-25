@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <title>Aurora / Sign In</title>
+  </Head>
   <form class="my-32 mx-auto max-w-sm" @submit.prevent="onFormSubmit">
     <h2 class="text-2xl font-medium">Sign in to <span class="text-sky-600">Aurora</span></h2>
 

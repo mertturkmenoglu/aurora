@@ -126,7 +126,128 @@ func GetProductByCategory(c *gin.Context) {
 	var products []*models.Product
 	res := db.Client.
 		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
 		Find(&products, "category_id IN ?", categoryIds)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetFeaturedProducts(c *gin.Context) {
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Order("created_at desc").
+		Limit(25).
+		Find(&products, "is_featured = ?", true)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetNewProducts(c *gin.Context) {
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Order("created_at desc").
+		Limit(25).
+		Find(&products, "is_new = ?", true)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetSaleProducts(c *gin.Context) {
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Order("created_at desc").
+		Limit(25).
+		Find(&products, "is_on_sale = ?", true)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetPopularProducts(c *gin.Context) {
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Order("created_at desc").
+		Limit(25).
+		Find(&products, "is_popular = ?", true)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetFreeShippingProducts(c *gin.Context) {
+	var products []*models.Product
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Order("created_at desc").
+		Limit(25).
+		Find(&products, "shipping_price = ?", 0)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": products,
+	})
+}
+
+func GetAllProducts(c *gin.Context) {
+	var products []*models.Product
+
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Find(&products)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
