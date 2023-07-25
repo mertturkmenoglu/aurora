@@ -65,12 +65,26 @@ export type Product = {
     brand: Brand;
     categoryId: string;
     category: Category;
+    styles: ProductStyle[];
+    sizes: ProductSize[];
 }
 
 export type ProductImage = {
     id: string;
     productId: string;
     url: string;
+}
+
+export type ProductStyle = {
+    id: string;
+    productId: string;
+    name: string;
+}
+
+export type ProductSize = {
+    id: string;
+    productId: string;
+    name: string;
 }
 
 export type Brand = {
