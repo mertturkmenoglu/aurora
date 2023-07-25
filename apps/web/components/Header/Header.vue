@@ -41,6 +41,7 @@
 import {MagnifyingGlassIcon, ShoppingBagIcon} from "@heroicons/vue/24/outline";
 import {CloudIcon} from "@heroicons/vue/24/solid";
 
+const route = useRoute()
 const showSliver = ref(true)
-const searchTerm = ref('')
+const searchTerm = ref(typeof route.query.q === "string" ? route.query.q : '')
 </script>
