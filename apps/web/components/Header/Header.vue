@@ -15,7 +15,7 @@
             class="border-b border-b-black rounded-none py-1 px-1 pr-6 hidden sm:flex"
             type="text"
         />
-        <nuxt-link :to="`/search?t=${searchTerm}`" class="z-10">
+        <nuxt-link :to="`/search?q=${searchTerm}`" class="z-10">
           <MagnifyingGlassIcon class="h-6 w-6 sm:h-4 sm:w-4 -ml-4 sm:mb-2 text-black"/>
         </nuxt-link>
 
