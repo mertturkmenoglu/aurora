@@ -39,6 +39,8 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/products/popular", GetPopularProducts)
 	app.GET("/products/free-shipping", GetFreeShippingProducts)
 	app.GET("/products/:id", GetProductById)
+	app.POST("/products/:id/styles", middlewares.ParseBody[dto.AddProductStylesDto](), AddProductStyles)
+	app.POST("/products/:id/sizes", middlewares.ParseBody[dto.AddProductSizesDto](), AddProductSizes)
 	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
 	app.GET("/products", GetProductByCategory)
 
