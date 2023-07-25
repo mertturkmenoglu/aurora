@@ -97,34 +97,38 @@
           </div>
 
           <!-- Style -->
-          <div class="mt-4">Styles:</div>
-          <div class="mt-2 grid grid-cols-4 gap-4">
-            <div v-for="(style, idx) in styles">
-              <button :class="clsx(
+          <div v-if="product.styles.length > 0">
+            <div class="mt-4">Styles:</div>
+            <div class="mt-2 grid grid-cols-3 gap-4">
+              <div v-for="(style, idx) in product.styles">
+                <button :class="clsx(
                   'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
                   {
                       'bg-sky-600 text-white': styleIndex === idx,
                       'hover:bg-sky-600 hover:text-white transition ease-in duration-200': styleIndex !== idx,
                   }
               )" @click="styleIndex = idx">
-                {{ style }}
-              </button>
+                  {{ style.name }}
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Size -->
-          <div class="mt-4">Sizes:</div>
-          <div class="mt-2 grid grid-cols-4 gap-4">
-            <div v-for="(size, idx) in sizes">
-              <button :class="clsx(
+          <div v-if="product.sizes.length > 0">
+            <div class="mt-4">Sizes:</div>
+            <div class="mt-2 grid grid-cols-4 gap-4">
+              <div v-for="(size, idx) in product.sizes">
+                <button :class="clsx(
                   'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
                   {
                       'bg-sky-600 text-white': sizeIndex === idx,
                       'hover:bg-sky-600 hover:text-white transition ease-in duration-200': sizeIndex !== idx,
                   }
               )" @click="sizeIndex = idx">
-                {{ size }}
-              </button>
+                  {{ size.name }}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -286,7 +290,7 @@ const categories = computed(() => {
 const breadcrumbLinks = computed(() => {
   return categories.value.map((category) => ({
     name: category.name,
-    href: `/products?categoryId=${category.id}`,
+    href: `/categories/${category.id}`,
   }))
 })
 
@@ -324,34 +328,5 @@ const reviewEmptyStarsCount = computed(() => {
   }
 
   return 5 - reviewFilledStarsCount.value;
-})
-
-const styles = computed(() => {
-  if (!product) {
-    return {};
-  }
-
-  return [
-    'Red',
-    'Blue',
-    'Green',
-    'Yellow',
-    'Purple',
-    'Indigo',
-  ]
-})
-
-const sizes = computed(() => {
-  if (!product) {
-    return {};
-  }
-
-  return [
-    'S',
-    'M',
-    'L',
-    'XL',
-    'XXL',
-  ]
 })
 </script>
