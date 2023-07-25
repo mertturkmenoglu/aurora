@@ -6,10 +6,17 @@ import (
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/clause"
+	"net/http"
 )
 
 func SearchProducts(c *gin.Context) {
 	searchTerm := c.Query("q")
+
+	if searchTerm == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Search term is required",
+		})
+	}
 
 	var products []*models.Product
 
