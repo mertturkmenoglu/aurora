@@ -22,8 +22,8 @@ type Product struct {
 	Brand         Brand          `json:"brand"`
 	CategoryId    uuid.UUID      `json:"categoryId"`
 	Category      Category       `json:"category"`
-	ProductStyles []ProductStyle `json:"productStyles"`
-	ProductSizes  []ProductSize  `json:"productSizes"`
+	ProductStyles []ProductStyle `json:"styles"`
+	ProductSizes  []ProductSize  `json:"sizes"`
 }
 
 type ProductImage struct {
