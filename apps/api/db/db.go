@@ -11,26 +11,53 @@ import (
 
 var Client *gorm.DB
 
-func Init() {
-	host, hostOk := os.LookupEnv("DB_HOST")
-	user, userOk := os.LookupEnv("DB_USER")
-	password, passwordOk := os.LookupEnv("DB_PASSWORD")
-	dbname, dbnameOk := os.LookupEnv("DB_NAME")
-	port, portOk := os.LookupEnv("DB_PORT")
-	timezone, timezoneOk := os.LookupEnv("DB_TIMEZONE")
-	debug := os.Getenv("DEBUG")
-
-	if !hostOk || !userOk || !passwordOk || !dbnameOk || !portOk || !timezoneOk {
-		panic("Missing database environment variables!")
+func createDsnFromEnvVars() string {
+	env := map[string]string{
+		"DB_HOST":     "",
+		"DB_USER":     "",
+		"DB_PASSWORD": "",
+		"DB_NAME":     "",
+		"DB_PORT":     "",
+		"DB_TIMEZONE": "",
 	}
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s", host, user, password, dbname, port, timezone)
+	for key := range env {
+		value, ok := os.LookupEnv(key)
 
+		if !ok {
+			panic(fmt.Sprintf("Missing database environment variable %s", key))
+		}
+
+		env[key] = value
+	}
+
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=%s",
+		env["DB_HOST"],
+		env["DB_USER"],
+		env["DB_PASSWORD"],
+		env["DB_NAME"],
+		env["DB_PORT"],
+		env["DB_TIMEZONE"],
+	)
+
+	return dsn
+}
+
+func getLogLevelFromEnv() logger.LogLevel {
 	logLevel := logger.Silent
+	debug := os.Getenv("DEBUG")
 
 	if debug == "true" {
 		logLevel = logger.Info
 	}
+
+	return logLevel
+}
+
+func Init() {
+	dsn := createDsnFromEnvVars()
+	logLevel := getLogLevelFromEnv()
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logLevel),
