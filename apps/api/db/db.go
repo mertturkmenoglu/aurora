@@ -85,5 +85,7 @@ func AutoMigrate() error {
 		&models.Favorite{},
 		&models.ProductStyle{},
 		&models.ProductSize{},
+		&models.Cart{},
+		&models.CartItem{},
 	)
 }
