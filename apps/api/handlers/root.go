@@ -26,10 +26,10 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)
 	app.PUT("/users/me", middlewares.ParseBody[dto.UpdateUserDto](), middlewares.IsAuth(), UpdateMe)
 	app.GET("/users/me/addresses", middlewares.IsAuth(), GetMyAddresses)
-	app.POST("/users/me/addresses", func(c *gin.Context) {})       // TODO: Create an address
-	app.PUT("/users/me/addresses/:id", func(c *gin.Context) {})    // TODO: Update an address
-	app.DELETE("/users/me/addresses/:id", func(c *gin.Context) {}) // TODO: Delete an address
-	app.PUT("/users/me/ad-preferences", func(c *gin.Context) {})   // TODO: Update my ad preferences
+	app.POST("/users/me/addresses", middlewares.IsAuth(), AddAddress)
+	app.PUT("/users/me/addresses/:id", middlewares.IsAuth(), UpdateAddress)
+	app.DELETE("/users/me/addresses/:id", middlewares.IsAuth(), DeleteAddress)
+	app.PUT("/users/me/ad-preferences", middlewares.IsAuth(), UpdateAdPreferences)
 
 	// Product routes
 	app.GET("/products/all", GetAllProducts)

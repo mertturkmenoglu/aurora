@@ -80,3 +80,19 @@ func GetMyAddresses(c *gin.Context) {
 		"data": addresses,
 	})
 }
+
+func AddAddress(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func UpdateAddress(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func DeleteAddress(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func UpdateAdPreferences(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
