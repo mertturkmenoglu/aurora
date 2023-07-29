@@ -72,4 +72,11 @@ func Bootstrap(router *gin.Engine) {
 
 	// Search routes
 	app.GET("/search", SearchProducts)
+
+	// Cart routes
+	app.GET("/cart", middlewares.IsAuth(), GetMyCart)
+	app.POST("/cart", middlewares.ParseBody[dto.AddToCartDto](), middlewares.IsAuth(), AddToCart)
+	app.DELETE("/cart/:id", middlewares.IsAuth(), RemoveFromCart)
+	app.DELETE("/cart", middlewares.IsAuth(), RemoveAllFromCart)
+	app.PUT("/cart/:id", middlewares.ParseBody[dto.UpdateCartItemDto](), middlewares.IsAuth(), UpdateCartItem)
 }
