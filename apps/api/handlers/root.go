@@ -18,9 +18,9 @@ func Bootstrap(router *gin.Engine) {
 	// Auth routes
 	app.POST("/auth/register", middlewares.ParseBody[dto.RegisterDto](), Register)
 	app.POST("/auth/login", middlewares.ParseBody[dto.LoginDto](), Login)
-	app.POST("/auth/forgot-password", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
-	app.POST("/auth/password-reset", middlewares.ParseBody[dto.PasswordResetDto](), PasswordReset)
-	app.PUT("/auth/password-change", func(c *gin.Context) {}) // TODO: Change password
+	app.POST("/auth/password/forgot", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
+	app.POST("/auth/password/reset", middlewares.ParseBody[dto.ResetPasswordDto](), ResetPassword)
+	app.PUT("/auth/password/change", middlewares.IsAuth(), ChangePassword)
 
 	// User routes
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)

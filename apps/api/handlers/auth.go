@@ -182,8 +182,8 @@ func ForgotPassword(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func PasswordReset(c *gin.Context) {
-	body := c.MustGet("body").(dto.PasswordResetDto)
+func ResetPassword(c *gin.Context) {
+	body := c.MustGet("body").(dto.ResetPasswordDto)
 
 	hadPassedCustomPasswordCheck := utils.CustomPasswordCheck(body.NewPassword)
 
@@ -250,4 +250,8 @@ func PasswordReset(c *gin.Context) {
 	_ = cache.Del(key)
 
 	c.Status(http.StatusOK)
+}
+
+func ChangePassword(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
 }
