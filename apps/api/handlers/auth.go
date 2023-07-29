@@ -55,7 +55,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	res = db.Client.Create(&models.User{
+	user := models.User{
 		FullName: body.FullName,
 		Email:    body.Email,
 		AdPreference: models.AdPreference{
@@ -65,6 +65,17 @@ func Register(c *gin.Context) {
 		},
 		Addresses: []models.Address{},
 		Phone:     "",
+	}
+
+	res = db.Client.Create(&user)
+
+	if res.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, res.Error.Error())
+		return
+	}
+
+	res = db.Client.Create(&models.Cart{
+		UserId: user.Id,
 	})
 
 	if res.Error != nil {
