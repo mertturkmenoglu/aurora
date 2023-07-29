@@ -18,18 +18,18 @@ func Bootstrap(router *gin.Engine) {
 	// Auth routes
 	app.POST("/auth/register", middlewares.ParseBody[dto.RegisterDto](), Register)
 	app.POST("/auth/login", middlewares.ParseBody[dto.LoginDto](), Login)
-	app.POST("/auth/forgot-password", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
-	app.POST("/auth/password-reset", middlewares.ParseBody[dto.PasswordResetDto](), PasswordReset)
-	app.PUT("/auth/password-change", func(c *gin.Context) {}) // TODO: Change password
+	app.POST("/auth/password/forgot", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
+	app.POST("/auth/password/reset", middlewares.ParseBody[dto.ResetPasswordDto](), ResetPassword)
+	app.PUT("/auth/password/change", middlewares.IsAuth(), ChangePassword)
 
 	// User routes
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)
 	app.PUT("/users/me", middlewares.ParseBody[dto.UpdateUserDto](), middlewares.IsAuth(), UpdateMe)
 	app.GET("/users/me/addresses", middlewares.IsAuth(), GetMyAddresses)
-	app.POST("/users/me/addresses", func(c *gin.Context) {})       // TODO: Create an address
-	app.PUT("/users/me/addresses/:id", func(c *gin.Context) {})    // TODO: Update an address
-	app.DELETE("/users/me/addresses/:id", func(c *gin.Context) {}) // TODO: Delete an address
-	app.PUT("/users/me/ad-preferences", func(c *gin.Context) {})   // TODO: Update my ad preferences
+	app.POST("/users/me/addresses", middlewares.IsAuth(), AddAddress)
+	app.PUT("/users/me/addresses/:id", middlewares.IsAuth(), UpdateAddress)
+	app.DELETE("/users/me/addresses/:id", middlewares.IsAuth(), DeleteAddress)
+	app.PUT("/users/me/ad-preferences", middlewares.IsAuth(), UpdateAdPreferences)
 
 	// Product routes
 	app.GET("/products/all", GetAllProducts)
@@ -39,6 +39,8 @@ func Bootstrap(router *gin.Engine) {
 	app.GET("/products/popular", GetPopularProducts)
 	app.GET("/products/free-shipping", GetFreeShippingProducts)
 	app.GET("/products/:id", GetProductById)
+	app.POST("/products/:id/styles", middlewares.ParseBody[dto.AddProductStylesDto](), AddProductStyles)
+	app.POST("/products/:id/sizes", middlewares.ParseBody[dto.AddProductSizesDto](), AddProductSizes)
 	app.POST("/products", middlewares.ParseBody[dto.CreateProductDto](), CreateProduct)
 	app.GET("/products", GetProductByCategory)
 
@@ -70,4 +72,11 @@ func Bootstrap(router *gin.Engine) {
 
 	// Search routes
 	app.GET("/search", SearchProducts)
+
+	// Cart routes
+	app.GET("/cart", middlewares.IsAuth(), GetMyCart)
+	app.POST("/cart", middlewares.ParseBody[dto.AddToCartDto](), middlewares.IsAuth(), AddToCart)
+	app.DELETE("/cart/:id", middlewares.IsAuth(), RemoveFromCart)
+	app.DELETE("/cart", middlewares.IsAuth(), RemoveAllFromCart)
+	app.PUT("/cart/:id", middlewares.ParseBody[dto.UpdateCartItemDto](), middlewares.IsAuth(), UpdateCartItem)
 }

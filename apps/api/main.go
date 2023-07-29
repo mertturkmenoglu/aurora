@@ -10,6 +10,7 @@ import (
 func main() {
 	router := gin.Default()
 	err := router.SetTrustedProxies(nil)
+
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AddAllowHeaders("x-access-token")
 	corsConfig.AddAllowHeaders("x-refresh-token")

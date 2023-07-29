@@ -22,10 +22,24 @@ type Product struct {
 	Brand         Brand          `json:"brand"`
 	CategoryId    uuid.UUID      `json:"categoryId"`
 	Category      Category       `json:"category"`
+	ProductStyles []ProductStyle `json:"styles"`
+	ProductSizes  []ProductSize  `json:"sizes"`
 }
 
 type ProductImage struct {
 	BaseModel
 	ProductId uuid.UUID `json:"productId"`
 	Url       string    `json:"url"`
+}
+
+type ProductStyle struct {
+	BaseModel
+	ProductId uuid.UUID `json:"productId"`
+	Name      string    `json:"name"`
+}
+
+type ProductSize struct {
+	BaseModel
+	ProductId uuid.UUID `json:"productId"`
+	Name      string    `json:"name"`
 }
