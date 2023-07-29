@@ -248,5 +248,71 @@ func RemoveAllFromCart(c *gin.Context) {
 }
 
 func UpdateCartItem(c *gin.Context) {
-	c.Status(http.StatusNotImplemented)
+	reqUser := c.MustGet("user").(jwt.Payload)
+	body := c.MustGet("body").(dto.UpdateCartItemDto)
+	cartItemId := c.Param("id")
+
+	cartItemIdAsUUID, err := uuid.Parse(cartItemId)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid cart item id")
+		return
+	}
+
+	// Get user by request user email
+	var user models.User
+
+	res := db.Client.
+		Where("email = ?", reqUser.Email).
+		First(&user)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Get cart by user id
+	var cart models.Cart
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("user_id = ?", user.Id).
+		First(&cart)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Get cart item by cart item id
+	var cartItem models.CartItem
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("id = ?", cartItemIdAsUUID).
+		First(&cartItem)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Check if cart item is in cart
+	if cartItem.CartId != cart.Id {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Cart item is not in cart")
+		return
+	}
+
+	res = db.Client.
+		Model(&cartItem).
+		Updates(models.CartItem{
+			Quantity: body.Quantity,
+		})
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
