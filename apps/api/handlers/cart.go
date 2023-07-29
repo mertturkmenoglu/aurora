@@ -8,6 +8,7 @@ import (
 	"aurora/services/utils"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/http"
@@ -31,6 +32,12 @@ func GetMyCart(c *gin.Context) {
 
 	res = db.Client.
 		Preload(clause.Associations).
+		Preload("Items.Product").
+		Preload("Items.Product.Images").
+		Preload("Items.Product.Category").
+		Preload("Items.Product.Brand").
+		Preload("Items.Product.ProductStyles").
+		Preload("Items.Product.ProductSizes").
 		Where("user_id = ?", user.Id).
 		First(&cart)
 
@@ -135,13 +142,111 @@ func AddToCart(c *gin.Context) {
 }
 
 func RemoveFromCart(c *gin.Context) {
+	reqUser := c.MustGet("user").(jwt.Payload)
+	cartItemId := c.Param("id")
 
+	cartItemIdAsUUID, err := uuid.Parse(cartItemId)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid cart item id")
+		return
+	}
+
+	// Get user by request user email
+	var user models.User
+
+	res := db.Client.
+		Where("email = ?", reqUser.Email).
+		First(&user)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Get cart by user id
+	var cart models.Cart
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("user_id = ?", user.Id).
+		First(&cart)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Get cart item by cart item id
+	var cartItem models.CartItem
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("id = ?", cartItemIdAsUUID).
+		First(&cartItem)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Check if cart item is in cart
+	if cartItem.CartId != cart.Id {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Cart item is not in cart")
+		return
+	}
+
+	res = db.Client.
+		Delete(&cartItem)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func RemoveAllFromCart(c *gin.Context) {
+	reqUser := c.MustGet("user").(jwt.Payload)
 
+	// Get user by request user email
+	var user models.User
+
+	res := db.Client.
+		Where("email = ?", reqUser.Email).
+		First(&user)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	// Get cart by user id
+	var cart models.Cart
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("user_id = ?", user.Id).
+		First(&cart)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	res = db.Client.
+		Where("cart_id = ?", cart.Id).
+		Delete(&models.CartItem{})
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func UpdateCartItem(c *gin.Context) {
-
+	c.Status(http.StatusNotImplemented)
 }
