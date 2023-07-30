@@ -46,7 +46,6 @@ export type Product = {
     id: string;
     createdAt: string;
     updatedAt: string;
-    deletedAt: string;
     name: string;
     description: string;
     currentPrice: number;
@@ -91,7 +90,6 @@ export type Brand = {
     id: string;
     createdAt: string;
     updatedAt: string;
-    deletedAt: string;
     name: string;
     description: string;
 }
@@ -100,8 +98,27 @@ export type Category = {
     id: string;
     createdAt: string;
     updatedAt: string;
-    deletedAt: string;
     name: string;
     parentId: string | null;
     parent: Category | null;
 }
+
+export type Cart = {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+    items: CartItem[];
+}
+
+export type CartItem = {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    cartId: string;
+    productId: string;
+    product: Product;
+    quantity: number;
+}
+
+export type CartDto = Dto<Cart>
