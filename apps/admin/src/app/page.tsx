@@ -1,7 +1,18 @@
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
+
 export default function Home() {
-  return (
-    <main className="">
-      Aurora
-    </main>
-  )
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <></>;
+  }
+
+  if (!isAuthenticated) {
+    window.location.href = '/signin';
+    return;
+  }
+
+  return <main className="">Aurora</main>;
 }

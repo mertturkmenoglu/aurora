@@ -4,6 +4,9 @@ import { Input } from '@/components/input';
 import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { BASE_URL } from '@/lib/api';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const schema = z.object({
   email: z.string().email(),
@@ -17,8 +20,25 @@ function Page() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    try {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const { accessToken, refreshToken } = (await response.json()).data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        window.location.href = '/';
+        return;
+      }
+
+      toast('Cannot login');
+    } catch (error) {
+      toast('Cannot login');
+    }
   };
 
   return (
@@ -35,7 +55,7 @@ function Page() {
           {...register('email')}
         />
         <Input
-          type="password"
+          type="text"
           placeholder="Password"
           error={formState.errors.password}
           {...register('password')}
@@ -48,6 +68,7 @@ function Page() {
           Sign in
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 }
