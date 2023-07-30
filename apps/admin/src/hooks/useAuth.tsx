@@ -15,7 +15,6 @@ export function useAuth() {
 
   useEffect(() => {
     const fn = async () => {
-      console.log({ accessToken, refreshToken });
       if (accessToken && refreshToken) {
         const response = await fetch(`${BASE_URL}/users/me`, {
           headers: {
