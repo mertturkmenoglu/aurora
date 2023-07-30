@@ -5,6 +5,7 @@ import (
 	"aurora/db/models"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
+	"aurora/services/email"
 	"aurora/services/hash"
 	"aurora/services/jwt"
 	"aurora/services/utils"
@@ -176,8 +177,20 @@ func ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	// TODO: Send email with the sid
-	fmt.Println("sid:", sid)
+	// TODO: Delegate this to a worker
+	err = email.SendEmailWithTemplate(email.WithTemplateConfig[email.ForgotPasswordPayload]{
+		To:           body.Email,
+		TemplatePath: "templates/forgot-password.html",
+		Subject:      "Reset your password",
+		Data: email.ForgotPasswordPayload{
+			Code: sid,
+		},
+	})
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.Status(http.StatusOK)
 }
