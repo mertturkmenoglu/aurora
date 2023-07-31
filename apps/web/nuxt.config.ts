@@ -5,6 +5,7 @@ export default defineNuxtConfig({
         "/my-account/**": {ssr: false},
         "/": {ssr: false},
         "/products/**": {ssr: false},
+        "/cart": {ssr: false}
     },
     devtools: {enabled: true},
     modules: [
