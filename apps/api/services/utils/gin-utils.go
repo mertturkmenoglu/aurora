@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
-	"strings"
 )
 
 func ErrorResponse(c *gin.Context, status int, errorMessage string) {
@@ -13,12 +14,12 @@ func ErrorResponse(c *gin.Context, status int, errorMessage string) {
 }
 
 func isNotFoundError(err error) bool {
-	return strings.Contains(err.Error(), "record not found")
+	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 
 func HandleDatabaseError(c *gin.Context, err error) {
 	if isNotFoundError(err) {
-		ErrorResponse(c, http.StatusNotFound, "record not found")
+		ErrorResponse(c, http.StatusNotFound, "resource not found")
 		c.Abort()
 		return
 	}
