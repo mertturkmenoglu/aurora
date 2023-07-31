@@ -20,7 +20,7 @@ func Bootstrap(router *gin.Engine) {
 	app.POST("/auth/login", middlewares.ParseBody[dto.LoginDto](), Login)
 	app.POST("/auth/password/forgot", middlewares.ParseBody[dto.ForgotPasswordDto](), ForgotPassword)
 	app.POST("/auth/password/reset", middlewares.ParseBody[dto.ResetPasswordDto](), ResetPassword)
-	app.PUT("/auth/password/change", middlewares.IsAuth(), ChangePassword)
+	app.PUT("/auth/password/change", middlewares.IsAuth(), middlewares.ParseBody[dto.ChangePasswordDto](), ChangePassword)
 
 	// User routes
 	app.GET("/users/me", middlewares.IsAuth(), GetMe)
