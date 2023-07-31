@@ -266,5 +266,52 @@ func ResetPassword(c *gin.Context) {
 }
 
 func ChangePassword(c *gin.Context) {
-	c.Status(http.StatusNotImplemented)
+	reqUser := c.MustGet("user").(jwt.Payload)
+	body := c.MustGet("body").(dto.ChangePasswordDto)
+
+	var auth models.Auth
+
+	res := db.Client.First(&auth, "email = ?", reqUser.Email)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	match, err := hash.VerifyHash(body.OldPassword, auth.Password)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if !match {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid credentials")
+		return
+	}
+
+	hadPassedCustomPasswordCheck := utils.CustomPasswordCheck(body.NewPassword)
+
+	if !hadPassedCustomPasswordCheck {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Validation failed for the password field")
+		return
+	}
+
+	hashedPassword, err := hash.StringHash(body.NewPassword)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	auth.Password = hashedPassword
+
+	res = db.Client.Save(&auth)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
