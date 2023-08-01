@@ -6,6 +6,7 @@ import (
 	"aurora/handlers/dto"
 	"aurora/services/cache"
 	"aurora/services/utils"
+	"aurora/services/utils/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
@@ -149,7 +150,7 @@ func GetProductById(c *gin.Context) {
 
 func GetProductsByCategory(c *gin.Context) {
 	categoryId := c.Query("categoryId")
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -170,8 +171,8 @@ func GetProductsByCategory(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&products, "category_id IN ?", categoryIds).
 		Count(&count)
 
@@ -180,11 +181,9 @@ func GetProductsByCategory(c *gin.Context) {
 		return
 	}
 
-	pagination := utils.GetPagination(paginationParams, count)
-
 	c.JSON(http.StatusOK, gin.H{
 		"data":       products,
-		"pagination": pagination,
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 
@@ -290,7 +289,7 @@ func GetFreeShippingProducts(c *gin.Context) {
 
 func GetAllProducts(c *gin.Context) {
 	var products []*models.Product
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -303,8 +302,8 @@ func GetAllProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&products).
 		Count(&count)
 
@@ -313,11 +312,9 @@ func GetAllProducts(c *gin.Context) {
 		return
 	}
 
-	pagination := utils.GetPagination(paginationParams, count)
-
 	c.JSON(http.StatusOK, gin.H{
 		"data":       products,
-		"pagination": pagination,
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 

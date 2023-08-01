@@ -6,6 +6,7 @@ import (
 	"aurora/handlers/dto"
 	"aurora/services/jwt"
 	"aurora/services/utils"
+	"aurora/services/utils/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -74,7 +75,7 @@ func CreateProductReview(c *gin.Context) {
 
 func GetMyBrandReviews(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -87,8 +88,8 @@ func GetMyBrandReviews(c *gin.Context) {
 	res := db.Client.
 		Preload("Brand").
 		Where("user_id = ?", reqUser.Id).
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&brandReviews).
 		Count(&count)
 
@@ -99,13 +100,13 @@ func GetMyBrandReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       brandReviews,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 
 func GetMyProductReviews(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -118,8 +119,8 @@ func GetMyProductReviews(c *gin.Context) {
 	res := db.Client.
 		Preload("Product").
 		Where("user_id = ?", reqUser.Id).
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&productReviews).
 		Count(&count)
 
@@ -130,7 +131,7 @@ func GetMyProductReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       productReviews,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 
@@ -188,7 +189,7 @@ func GetProductReview(c *gin.Context) {
 
 func GetBrandReviews(c *gin.Context) {
 	id := c.Param("id")
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -208,8 +209,8 @@ func GetBrandReviews(c *gin.Context) {
 	res := db.Client.
 		Preload("User").
 		Where("brand_id = ?", idAsUUID).
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&brandReviews).
 		Count(&count)
 
@@ -220,13 +221,13 @@ func GetBrandReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       brandReviews,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 
 func GetProductReviews(c *gin.Context) {
 	id := c.Param("id")
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -246,8 +247,8 @@ func GetProductReviews(c *gin.Context) {
 	res := db.Client.
 		Preload("User").
 		Where("product_id = ?", idAsUUID).
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&productReviews).
 		Count(&count)
 
@@ -258,7 +259,7 @@ func GetProductReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       productReviews,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 

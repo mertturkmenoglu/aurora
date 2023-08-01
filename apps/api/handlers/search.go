@@ -4,6 +4,7 @@ import (
 	"aurora/db"
 	"aurora/db/models"
 	"aurora/services/utils"
+	"aurora/services/utils/pagination"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/clause"
 	"net/http"
@@ -18,7 +19,7 @@ func SearchProducts(c *gin.Context) {
 		})
 	}
 
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -32,8 +33,8 @@ func SearchProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Where("name ILIKE ?", "%"+searchTerm+"%").
 		Find(&products).
 		Count(&count)
@@ -45,6 +46,6 @@ func SearchProducts(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"data":       products,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }

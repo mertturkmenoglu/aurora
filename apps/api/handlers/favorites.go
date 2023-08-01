@@ -6,6 +6,7 @@ import (
 	"aurora/handlers/dto"
 	"aurora/services/jwt"
 	"aurora/services/utils"
+	"aurora/services/utils/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
@@ -14,7 +15,7 @@ import (
 
 func GetMyFavorites(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
-	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+	params, err := pagination.GetParamsFromContext(c)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -37,8 +38,8 @@ func GetMyFavorites(c *gin.Context) {
 	res = db.Client.
 		Preload(clause.Associations).
 		Where("user_id = ?", user.Id).
-		Limit(paginationParams.PageSize).
-		Offset(paginationParams.Offset).
+		Limit(params.PageSize).
+		Offset(params.Offset).
 		Find(&favorites).
 		Count(&count)
 
@@ -49,7 +50,7 @@ func GetMyFavorites(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       favorites,
-		"pagination": utils.GetPagination(paginationParams, count),
+		"pagination": pagination.GetPagination(params, count),
 	})
 }
 
