@@ -147,8 +147,14 @@ func GetProductById(c *gin.Context) {
 	})
 }
 
-func GetProductByCategory(c *gin.Context) {
+func GetProductsByCategory(c *gin.Context) {
 	categoryId := c.Query("categoryId")
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	if _, err := uuid.Parse(categoryId); err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, "categoryId is malformed")
@@ -158,19 +164,27 @@ func GetProductByCategory(c *gin.Context) {
 	categoryIds := getCategoryAndSubCategoryIds(categoryId)
 
 	var products []*models.Product
+	var count int64
+
 	res := db.Client.
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
-		Find(&products, "category_id IN ?", categoryIds)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&products, "category_id IN ?", categoryIds).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
 		return
 	}
 
+	pagination := utils.GetPagination(paginationParams, count)
+
 	c.JSON(http.StatusOK, gin.H{
-		"data": products,
+		"data":       products,
+		"pagination": pagination,
 	})
 }
 
@@ -276,20 +290,34 @@ func GetFreeShippingProducts(c *gin.Context) {
 
 func GetAllProducts(c *gin.Context) {
 	var products []*models.Product
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var count int64
 
 	res := db.Client.
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
-		Find(&products)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&products).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
 		return
 	}
 
+	pagination := utils.GetPagination(paginationParams, count)
+
 	c.JSON(http.StatusOK, gin.H{
-		"data": products,
+		"data":       products,
+		"pagination": pagination,
 	})
 }
 

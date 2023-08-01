@@ -74,13 +74,23 @@ func CreateProductReview(c *gin.Context) {
 
 func GetMyBrandReviews(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	var brandReviews []*models.BrandReview
+	var count int64
 
 	res := db.Client.
 		Preload("Brand").
 		Where("user_id = ?", reqUser.Id).
-		Find(&brandReviews)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&brandReviews).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -88,19 +98,30 @@ func GetMyBrandReviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": brandReviews,
+		"data":       brandReviews,
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
 func GetMyProductReviews(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	var productReviews []*models.ProductReview
+	var count int64
 
 	res := db.Client.
 		Preload("Product").
 		Where("user_id = ?", reqUser.Id).
-		Find(&productReviews)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&productReviews).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -108,7 +129,8 @@ func GetMyProductReviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": productReviews,
+		"data":       productReviews,
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
@@ -166,6 +188,12 @@ func GetProductReview(c *gin.Context) {
 
 func GetBrandReviews(c *gin.Context) {
 	id := c.Param("id")
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	idAsUUID, err := uuid.Parse(id)
 
@@ -175,11 +203,15 @@ func GetBrandReviews(c *gin.Context) {
 	}
 
 	var brandReviews []*models.BrandReview
+	var count int64
 
 	res := db.Client.
 		Preload("User").
 		Where("brand_id = ?", idAsUUID).
-		Find(&brandReviews)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&brandReviews).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -187,12 +219,19 @@ func GetBrandReviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": brandReviews,
+		"data":       brandReviews,
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
 func GetProductReviews(c *gin.Context) {
 	id := c.Param("id")
+	paginationParams, err := utils.GetPaginationParamsFromContext(c)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	idAsUUID, err := uuid.Parse(id)
 
@@ -202,11 +241,15 @@ func GetProductReviews(c *gin.Context) {
 	}
 
 	var productReviews []*models.ProductReview
+	var count int64
 
 	res := db.Client.
 		Preload("User").
 		Where("product_id = ?", idAsUUID).
-		Find(&productReviews)
+		Limit(paginationParams.PageSize).
+		Offset(paginationParams.Offset).
+		Find(&productReviews).
+		Count(&count)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -214,7 +257,8 @@ func GetProductReviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": productReviews,
+		"data":       productReviews,
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 

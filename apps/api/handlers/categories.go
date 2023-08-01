@@ -58,38 +58,26 @@ func GetCategories(c *gin.Context) {
 		return
 	}
 
-	l0Categories := make([]models.Category, 0)
 	l1Categories := make([]models.Category, 0)
 	l2Categories := make([]models.Category, 0)
 
 	for _, category := range categories {
 		if category.ParentId == nil {
-			l0Categories = append(l0Categories, category)
+			megaNavigation.Items = append(megaNavigation.Items, dto.L0Item{
+				Id:    category.Id.String(),
+				Name:  category.Name,
+				Items: make([]dto.L1Item, 0),
+			})
 		}
-	}
-
-	for _, l0 := range l0Categories {
-		megaNavigation.Items = append(megaNavigation.Items, dto.L0Item{
-			Id:    l0.Id.String(),
-			Name:  l0.Name,
-			Items: make([]dto.L1Item, 0),
-		})
 	}
 
 	for _, category := range categories {
-		for _, l0Category := range l0Categories {
-			if category.ParentId != nil && category.ParentId.String() == l0Category.Id.String() {
+		for i, l0Category := range megaNavigation.Items {
+			if category.ParentId != nil && category.ParentId.String() == l0Category.Id {
 				l1Categories = append(l1Categories, category)
-			}
-		}
-	}
-
-	for _, l1 := range l1Categories {
-		for i, l0 := range megaNavigation.Items {
-			if l0.Id == l1.ParentId.String() {
 				megaNavigation.Items[i].Items = append(megaNavigation.Items[i].Items, dto.L1Item{
-					Id:    l1.Id.String(),
-					Name:  l1.Name,
+					Id:    category.Id.String(),
+					Name:  category.Name,
 					Items: make([]dto.L2Item, 0),
 				})
 			}
