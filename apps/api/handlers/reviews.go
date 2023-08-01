@@ -16,30 +16,28 @@ func CreateBrandReview(c *gin.Context) {
 	body := c.MustGet("body").(dto.CreateBrandReviewDto)
 	reqUser := c.MustGet("user").(jwt.Payload)
 
-	brandIdAsUuid, err := uuid.Parse(body.BrandId)
+	brandIdAsUUID, err := uuid.Parse(body.BrandId)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, "brandId is missing or malformed")
 		return
 	}
 
-	var user *models.User
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
+	userIdAsUUID, err := uuid.Parse(reqUser.UserId)
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "userId is missing or malformed")
 		return
 	}
 
 	brandReview := models.BrandReview{
 		Comment: body.Comment,
 		Rating:  body.Rating,
-		BrandId: brandIdAsUuid,
-		UserId:  user.Id,
+		BrandId: brandIdAsUUID,
+		UserId:  userIdAsUUID,
 	}
 
-	res = db.Client.Create(&brandReview)
+	res := db.Client.Create(&brandReview)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -55,22 +53,37 @@ func CreateProductReview(c *gin.Context) {
 	body := c.MustGet("body").(dto.CreateProductReviewDto)
 	reqUser := c.MustGet("user").(jwt.Payload)
 
-	_, err := uuid.Parse(body.ProductId)
+	productIdAsUUID, err := uuid.Parse(body.ProductId)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, "productId is missing or malformed")
 		return
 	}
 
-	var user *models.User
+	userIdAsUUID, err := uuid.Parse(reqUser.UserId)
 
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "userId is missing or malformed")
+		return
+	}
+
+	productReview := models.ProductReview{
+		Comment:   body.Comment,
+		Rating:    body.Rating,
+		ProductId: productIdAsUUID,
+		UserId:    userIdAsUUID,
+	}
+
+	res := db.Client.Create(&productReview)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
 		return
 	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"data": productReview,
+	})
 }
 
 func GetMyBrandReviews(c *gin.Context) {
@@ -87,7 +100,7 @@ func GetMyBrandReviews(c *gin.Context) {
 
 	res := db.Client.
 		Preload("Brand").
-		Where("user_id = ?", reqUser.Id).
+		Where("user_id = ?", reqUser.UserId).
 		Limit(params.PageSize).
 		Offset(params.Offset).
 		Find(&brandReviews).
@@ -118,7 +131,7 @@ func GetMyProductReviews(c *gin.Context) {
 
 	res := db.Client.
 		Preload("Product").
-		Where("user_id = ?", reqUser.Id).
+		Where("user_id = ?", reqUser.UserId).
 		Limit(params.PageSize).
 		Offset(params.Offset).
 		Find(&productReviews).
@@ -274,10 +287,10 @@ func DeleteBrandReview(c *gin.Context) {
 	}
 
 	reqUser := c.MustGet("user").(jwt.Payload)
-	userIdAsUUID, err := uuid.Parse(reqUser.Id)
+	userIdAsUUID, err := uuid.Parse(reqUser.UserId)
 
 	if err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is missing or malformed")
+		utils.ErrorResponse(c, http.StatusBadRequest, "userId is missing or malformed")
 		return
 	}
 
@@ -319,10 +332,10 @@ func DeleteProductReview(c *gin.Context) {
 	}
 
 	reqUser := c.MustGet("user").(jwt.Payload)
-	userIdAsUUID, err := uuid.Parse(reqUser.Id)
+	userIdAsUUID, err := uuid.Parse(reqUser.UserId)
 
 	if err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is missing or malformed")
+		utils.ErrorResponse(c, http.StatusBadRequest, "userId is missing or malformed")
 		return
 	}
 

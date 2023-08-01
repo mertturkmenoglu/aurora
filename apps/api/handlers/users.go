@@ -68,7 +68,7 @@ func GetMyAddresses(c *gin.Context) {
 	var addresses []*models.Address
 
 	res := db.Client.
-		Where("user_id = ?", reqUser.Id).
+		Where("user_id = ?", reqUser.UserId).
 		Find(&addresses)
 
 	if res.Error != nil {
