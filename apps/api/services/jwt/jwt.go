@@ -13,7 +13,7 @@ var (
 )
 
 type Payload struct {
-	Id       string
+	UserId   string
 	FullName string
 	Email    string
 }
