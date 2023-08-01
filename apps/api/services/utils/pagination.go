@@ -17,12 +17,12 @@ type PaginationParams struct {
 }
 
 type Pagination struct {
-	Page         int
-	PageSize     int
-	TotalRecords int64
-	TotalPages   int64
-	HasPrevious  bool
-	HasNext      bool
+	Page         int   `json:"page"`
+	PageSize     int   `json:"pageSize"`
+	TotalRecords int64 `json:"totalRecords"`
+	TotalPages   int64 `json:"totalPages"`
+	HasPrevious  bool  `json:"hasPrevious"`
+	HasNext      bool  `json:"hasNext"`
 }
 
 func GetPaginationParamsFromContext(c *gin.Context) (PaginationParams, error) {
