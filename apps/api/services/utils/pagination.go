@@ -26,10 +26,10 @@ type Pagination struct {
 }
 
 func GetPaginationParamsFromContext(c *gin.Context) (PaginationParams, error) {
-	pageQuery, pageOk := c.GetQuery("page")
-	pageSizeQuery, pageSizeOk := c.GetQuery("pageSize")
+	pageQuery, pageQueryOk := c.GetQuery("page")
+	pageSizeQuery, pageSizeQueryOk := c.GetQuery("pageSize")
 
-	if !pageOk || !pageSizeOk {
+	if !pageQueryOk || !pageSizeQueryOk {
 		return PaginationParams{}, ErrInvalidPaginationParams
 	}
 
