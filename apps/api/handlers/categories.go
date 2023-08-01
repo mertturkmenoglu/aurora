@@ -58,7 +58,7 @@ func GetCategories(c *gin.Context) {
 
 	megaNavigation := getMegaNavigationFromCategories(categories)
 
-	_ = cache.HSet("mega-navigation", megaNavigation, 1*time.Hour)
+	_ = cache.HSet("mega-navigation", megaNavigation, 24*time.Hour)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": megaNavigation,
