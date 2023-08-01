@@ -9,9 +9,26 @@ import (
 	"aurora/services/utils/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"net/http"
 )
+
+func checkOnlyOneDefaultVariant(vars []dto.ProductVariantDto) bool {
+	counter := 0
+
+	for _, variant := range vars {
+		if variant.IsDefault {
+			counter++
+		}
+	}
+
+	if counter == 1 {
+		return true
+	}
+
+	return false
+}
 
 func CreateProduct(c *gin.Context) {
 	body := c.MustGet("body").(dto.CreateProductDto)
@@ -30,76 +47,96 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	product := &models.Product{
-		Name:          body.Name,
-		Description:   body.Description,
-		CurrentPrice:  body.CurrentPrice,
-		OldPrice:      body.OldPrice,
-		Inventory:     body.Inventory,
-		IsFeatured:    body.IsFeatured,
-		IsNew:         body.IsNew,
-		IsOnSale:      body.IsOnSale,
-		IsPopular:     body.IsPopular,
-		ShippingPrice: body.ShippingPrice,
-		ShippingTime:  body.ShippingTime,
-		ShippingType:  body.ShippingType,
-		Slug:          body.Slug,
-		BrandId:       brandIdAsUUID,
-		CategoryId:    categoryIdAsUUID,
-		Images:        []models.ProductImage{},
-		ProductStyles: []models.ProductStyle{},
-		ProductSizes:  []models.ProductSize{},
-	}
+	variantDefaultsOk := checkOnlyOneDefaultVariant(body.ProductVariants)
 
-	res := db.Client.Create(product)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if !variantDefaultsOk {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Only one variant can be default")
 		return
 	}
 
-	images := make([]*models.ProductImage, len(body.Images))
+	var productId uuid.UUID
 
-	for i, image := range body.Images {
-		images[i] = &models.ProductImage{
-			ProductId: product.Id,
-			Url:       image.Url,
+	err = db.Client.Transaction(func(tx *gorm.DB) error {
+		product := &models.Product{
+			Name:        body.Name,
+			Description: body.Description,
+			IsFeatured:  body.IsFeatured,
+			IsNew:       body.IsNew,
+			IsOnSale:    body.IsOnSale,
+			IsPopular:   body.IsPopular,
+			BrandId:     brandIdAsUUID,
+			CategoryId:  categoryIdAsUUID,
 		}
-	}
 
-	res = db.Client.Create(&images)
+		res := tx.Create(product)
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+		if res.Error != nil {
+			return res.Error
+		}
+
+		productId = product.Id
+
+		for _, variant := range body.ProductVariants {
+			styleUUID, err := uuid.Parse(variant.ProductStyleId)
+
+			if err != nil {
+				return err
+			}
+
+			sizeUUID, err := uuid.Parse(variant.ProductSizeId)
+
+			if err != nil {
+				return err
+			}
+
+			productVariant := &models.ProductVariant{
+				ProductId:    product.Id,
+				CurrentPrice: variant.CurrentPrice,
+				OldPrice:     variant.OldPrice,
+				Inventory:    variant.Inventory,
+				Image: models.ProductImage{
+					ProductId: product.Id,
+					Url:       variant.Image.Url,
+				},
+				ShippingPrice:  variant.ShippingPrice,
+				ShippingTime:   variant.ShippingTime,
+				ShippingType:   variant.ShippingType,
+				ProductStyleId: styleUUID,
+				ProductSizeId:  sizeUUID,
+			}
+
+			res = tx.Create(productVariant)
+
+			if res.Error != nil {
+				return res.Error
+			}
+
+			if variant.IsDefault {
+				product.DefaultVariantId = productVariant.Id
+
+				res = tx.Save(product)
+
+				if res.Error != nil {
+					return res.Error
+				}
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
-	styles := make([]*models.ProductStyle, len(body.ProductStyles))
+	var product *models.Product
 
-	for i, style := range body.ProductStyles {
-		styles[i] = &models.ProductStyle{
-			ProductId: product.Id,
-			Name:      style.Name,
-		}
-	}
-
-	res = db.Client.Create(&styles)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
-	sizes := make([]*models.ProductSize, len(body.ProductSizes))
-
-	for i, size := range body.ProductSizes {
-		sizes[i] = &models.ProductSize{
-			ProductId: product.Id,
-			Name:      size.Name,
-		}
-	}
-
-	res = db.Client.Create(&sizes)
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		First(&product, "ID = ?", productId)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -267,26 +304,6 @@ func GetPopularProducts(c *gin.Context) {
 	})
 }
 
-func GetFreeShippingProducts(c *gin.Context) {
-	var products []*models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Order("created_at desc").
-		Limit(25).
-		Find(&products, "shipping_price = ?", 0)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"data": products,
-	})
-}
-
 func GetAllProducts(c *gin.Context) {
 	var products []*models.Product
 	params, err := pagination.GetParamsFromContext(c)
@@ -319,32 +336,16 @@ func GetAllProducts(c *gin.Context) {
 }
 
 func AddProductStyles(c *gin.Context) {
-	id := c.Param("id")
 	body := c.MustGet("body").(dto.AddProductStylesDto)
-
-	if _, err := uuid.Parse(id); err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is malformed")
-		return
-	}
-
-	var product *models.Product
-	res := db.Client.First(&product, "id = ?", id)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	styles := make([]*models.ProductStyle, len(body.Styles))
 
 	for i, style := range body.Styles {
 		styles[i] = &models.ProductStyle{
-			ProductId: product.Id,
-			Name:      style.Name,
+			Name: style.Name,
 		}
 	}
 
-	res = db.Client.Create(&styles)
+	res := db.Client.Create(&styles)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
@@ -357,32 +358,16 @@ func AddProductStyles(c *gin.Context) {
 }
 
 func AddProductSizes(c *gin.Context) {
-	id := c.Param("id")
 	body := c.MustGet("body").(dto.AddProductSizesDto)
-
-	if _, err := uuid.Parse(id); err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is malformed")
-		return
-	}
-
-	var product *models.Product
-	res := db.Client.First(&product, "id = ?", id)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	sizes := make([]*models.ProductSize, len(body.Sizes))
 
 	for i, size := range body.Sizes {
 		sizes[i] = &models.ProductSize{
-			ProductId: product.Id,
-			Name:      size.Name,
+			Name: size.Name,
 		}
 	}
 
-	res = db.Client.Create(&sizes)
+	res := db.Client.Create(&sizes)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)

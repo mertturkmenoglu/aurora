@@ -72,20 +72,21 @@ func Init() {
 
 func AutoMigrate() error {
 	return Client.AutoMigrate(
-		&models.Auth{},
-		&models.User{},
-		&models.Brand{},
-		&models.Product{},
-		&models.ProductImage{},
-		&models.AdPreference{},
 		&models.Address{},
-		&models.Category{},
+		&models.AdPreference{},
+		&models.Auth{},
+		&models.Brand{},
 		&models.BrandReview{},
-		&models.ProductReview{},
-		&models.Favorite{},
-		&models.ProductStyle{},
-		&models.ProductSize{},
 		&models.Cart{},
 		&models.CartItem{},
+		&models.Category{},
+		&models.Favorite{},
+		&models.Product{},
+		&models.ProductVariant{},
+		&models.ProductImage{},
+		&models.ProductReview{},
+		&models.ProductStyle{},
+		&models.ProductSize{},
+		&models.User{},
 	)
 }
