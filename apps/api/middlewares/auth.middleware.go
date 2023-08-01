@@ -38,8 +38,8 @@ func IsAuth() gin.HandlerFunc {
 		}
 
 		// Cache miss
-		var auth models.Auth
-		result := db.Client.Find(&auth, "email = ?", claims.Email)
+		var user models.User
+		result := db.Client.Find(&user, "email = ?", claims.Email)
 
 		if result.Error != nil {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "Invalid credentials")
@@ -48,9 +48,9 @@ func IsAuth() gin.HandlerFunc {
 		}
 
 		reqUser := jwt.Payload{
-			Id:       auth.Id.String(),
-			FullName: auth.FullName,
-			Email:    auth.Email,
+			UserId:   user.Id.String(),
+			FullName: user.FullName,
+			Email:    user.Email,
 		}
 
 		// Set cache
