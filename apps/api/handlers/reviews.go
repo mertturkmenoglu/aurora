@@ -99,7 +99,7 @@ func GetMyBrandReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       brandReviews,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
@@ -130,7 +130,7 @@ func GetMyProductReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       productReviews,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
@@ -220,7 +220,7 @@ func GetBrandReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       brandReviews,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 
@@ -258,7 +258,7 @@ func GetProductReviews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       productReviews,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 

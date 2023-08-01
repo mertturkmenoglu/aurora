@@ -49,7 +49,7 @@ func GetMyFavorites(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       favorites,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }
 

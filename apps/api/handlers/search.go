@@ -45,6 +45,6 @@ func SearchProducts(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"data":       products,
-		"pagination": utils.GetPaginationFromParams(paginationParams, count),
+		"pagination": utils.GetPagination(paginationParams, count),
 	})
 }

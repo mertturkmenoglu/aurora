@@ -60,7 +60,7 @@ func GetPaginationParamsFromContext(c *gin.Context) (PaginationParams, error) {
 	return params, nil
 }
 
-func GetPaginationFromParams(params PaginationParams, totalRecords int64) Pagination {
+func GetPagination(params PaginationParams, totalRecords int64) Pagination {
 	totalPages := totalRecords / int64(params.PageSize)
 	hasPrevious := params.Page > 1
 	hasNext := int64(params.Page) < totalPages

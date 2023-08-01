@@ -180,7 +180,7 @@ func GetProductsByCategory(c *gin.Context) {
 		return
 	}
 
-	pagination := utils.GetPaginationFromParams(paginationParams, count)
+	pagination := utils.GetPagination(paginationParams, count)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       products,
@@ -313,7 +313,7 @@ func GetAllProducts(c *gin.Context) {
 		return
 	}
 
-	pagination := utils.GetPaginationFromParams(paginationParams, count)
+	pagination := utils.GetPagination(paginationParams, count)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       products,
