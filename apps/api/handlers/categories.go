@@ -49,8 +49,6 @@ func GetCategories(c *gin.Context) {
 
 	// Cache miss
 	var categories []models.Category
-	var megaNavigation dto.MegaNavigation
-
 	res := db.Client.Find(&categories)
 
 	if res.Error != nil {
@@ -58,56 +56,64 @@ func GetCategories(c *gin.Context) {
 		return
 	}
 
-	l1Categories := make([]models.Category, 0)
-	l2Categories := make([]models.Category, 0)
-
-	for _, category := range categories {
-		if category.ParentId == nil {
-			megaNavigation.Items = append(megaNavigation.Items, dto.L0Item{
-				Id:    category.Id.String(),
-				Name:  category.Name,
-				Items: make([]dto.L1Item, 0),
-			})
-		}
-	}
-
-	for _, category := range categories {
-		for i, l0Category := range megaNavigation.Items {
-			if category.ParentId != nil && category.ParentId.String() == l0Category.Id {
-				l1Categories = append(l1Categories, category)
-				megaNavigation.Items[i].Items = append(megaNavigation.Items[i].Items, dto.L1Item{
-					Id:    category.Id.String(),
-					Name:  category.Name,
-					Items: make([]dto.L2Item, 0),
-				})
-			}
-		}
-	}
-
-	for _, category := range categories {
-		for _, l1Category := range l1Categories {
-			if category.ParentId != nil && category.ParentId.String() == l1Category.Id.String() {
-				l2Categories = append(l2Categories, category)
-			}
-		}
-	}
-
-	for _, l2 := range l2Categories {
-		for i, l0 := range megaNavigation.Items {
-			for j, l1 := range l0.Items {
-				if l1.Id == l2.ParentId.String() {
-					megaNavigation.Items[i].Items[j].Items = append(megaNavigation.Items[i].Items[j].Items, dto.L2Item{
-						Id:   l2.Id.String(),
-						Name: l2.Name,
-					})
-				}
-			}
-		}
-	}
+	megaNavigation := getMegaNavigationFromCategories(categories)
 
 	_ = cache.HSet("mega-navigation", megaNavigation, 1*time.Hour)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": megaNavigation,
 	})
+}
+
+func getMegaNavigationFromCategories(categories []models.Category) dto.MegaNavigation {
+	var nav dto.MegaNavigation
+
+	l1Categories := make([]models.Category, 0)
+	l2Categories := make([]models.Category, 0)
+	uncategorized := make([]models.Category, 0)
+
+	// Find L0 categories
+	for _, category := range categories {
+		if category.ParentId == nil {
+			nav.Items = append(nav.Items, dto.L0Item{
+				Id:    category.Id.String(),
+				Name:  category.Name,
+				Items: make([]dto.L1Item, 0),
+			})
+		} else {
+			uncategorized = append(uncategorized, category)
+		}
+	}
+
+	// Find L1 and L2 categories
+	for _, category := range uncategorized {
+		for i, l0Category := range nav.Items {
+			if category.ParentId.String() == l0Category.Id {
+				l1Categories = append(l1Categories, category)
+				nav.Items[i].Items = append(nav.Items[i].Items, dto.L1Item{
+					Id:    category.Id.String(),
+					Name:  category.Name,
+					Items: make([]dto.L2Item, 0),
+				})
+			} else {
+				l2Categories = append(l2Categories, category)
+			}
+		}
+	}
+
+	// Build L2 categories
+	for _, category := range l2Categories {
+		for i, l0 := range nav.Items {
+			for j, l1 := range l0.Items {
+				if l1.Id == category.ParentId.String() {
+					nav.Items[i].Items[j].Items = append(nav.Items[i].Items[j].Items, dto.L2Item{
+						Id:   category.Id.String(),
+						Name: category.Name,
+					})
+				}
+			}
+		}
+	}
+
+	return nav
 }
