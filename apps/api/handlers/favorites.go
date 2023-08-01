@@ -22,22 +22,12 @@ func GetMyFavorites(c *gin.Context) {
 		return
 	}
 
-	var user *models.User
-
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	var favorites []*models.Favorite
 	var count int64
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		Limit(params.PageSize).
 		Offset(params.Offset).
 		Find(&favorites).
@@ -65,22 +55,19 @@ func AddFavorite(c *gin.Context) {
 		return
 	}
 
-	var user *models.User
+	userIdAsUUID, err := uuid.Parse(reqUser.UserId)
 
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "userId is missing or malformed")
 		return
 	}
 
 	favorite := models.Favorite{
-		UserId:    user.Id,
+		UserId:    userIdAsUUID,
 		ProductId: productIdAsUUID,
 	}
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
 		Create(&favorite)
 
@@ -98,21 +85,11 @@ func DeleteFavorite(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 	id := c.Param("id")
 
-	var user *models.User
-
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	var favorite *models.Favorite
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ? AND id = ?", user.Id, id).
+		Where("user_id = ? AND id = ?", reqUser.UserId, id).
 		Delete(&favorite)
 
 	if res.Error != nil {
@@ -128,21 +105,11 @@ func DeleteFavorite(c *gin.Context) {
 func DeleteAllFavorites(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 
-	var user *models.User
-
-	res := db.Client.
-		First(&user, "email = ?", reqUser.Email)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	var favorites []*models.Favorite
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		Delete(&favorites)
 
 	if res.Error != nil {

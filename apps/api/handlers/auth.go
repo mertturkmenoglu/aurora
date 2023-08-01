@@ -126,10 +126,19 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	var user models.User
+
+	res = db.Client.First(&user, "email = ?", body.Email)
+
+	if res.Error != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, res.Error.Error())
+		return
+	}
+
 	token, err := jwt.EncodeJwt(jwt.Payload{
-		Id:       auth.Id.String(),
-		FullName: auth.FullName,
-		Email:    auth.Email,
+		UserId:   user.Id.String(),
+		Email:    user.Email,
+		FullName: user.FullName,
 	})
 
 	if err != nil {

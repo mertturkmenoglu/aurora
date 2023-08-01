@@ -55,24 +55,12 @@ func AddToCart(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 	body := c.MustGet("body").(dto.AddToCartDto)
 
-	// Get user by request user email
-	var user models.User
-
-	res := db.Client.
-		Where("email = ?", reqUser.Email).
-		First(&user)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	// Get cart by user id
 	var cart models.Cart
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		First(&cart)
 
 	if res.Error != nil {
@@ -152,24 +140,12 @@ func RemoveFromCart(c *gin.Context) {
 		return
 	}
 
-	// Get user by request user email
-	var user models.User
-
-	res := db.Client.
-		Where("email = ?", reqUser.Email).
-		First(&user)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	// Get cart by user id
 	var cart models.Cart
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		First(&cart)
 
 	if res.Error != nil {
@@ -210,24 +186,12 @@ func RemoveFromCart(c *gin.Context) {
 func RemoveAllFromCart(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 
-	// Get user by request user email
-	var user models.User
-
-	res := db.Client.
-		Where("email = ?", reqUser.Email).
-		First(&user)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	// Get cart by user id
 	var cart models.Cart
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		First(&cart)
 
 	if res.Error != nil {
@@ -259,24 +223,12 @@ func UpdateCartItem(c *gin.Context) {
 		return
 	}
 
-	// Get user by request user email
-	var user models.User
-
-	res := db.Client.
-		Where("email = ?", reqUser.Email).
-		First(&user)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
-		return
-	}
-
 	// Get cart by user id
 	var cart models.Cart
 
-	res = db.Client.
+	res := db.Client.
 		Preload(clause.Associations).
-		Where("user_id = ?", user.Id).
+		Where("user_id = ?", reqUser.UserId).
 		First(&cart)
 
 	if res.Error != nil {
