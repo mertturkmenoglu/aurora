@@ -182,6 +182,9 @@ func GetProductById(c *gin.Context) {
 		Preload("DefaultVariant.Image").
 		Preload("DefaultVariant.ProductStyle").
 		Preload("DefaultVariant.ProductSize").
+		Preload("ProductVariants.Image").
+		Preload("ProductVariants.ProductStyle").
+		Preload("ProductVariants.ProductSize").
 		First(&product, "ID = ?", id)
 
 	if res.Error != nil {
