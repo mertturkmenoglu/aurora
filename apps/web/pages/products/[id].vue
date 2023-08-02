@@ -2,7 +2,7 @@
   <Head>
     <title>Aurora / {{ product?.name }}</title>
   </Head>
-  <div v-if='product' class='container mx-auto my-8'>
+  <div v-if='product && v' class='container mx-auto my-8'>
     <Breadcrumbs :items='breadcrumbLinks' />
 
     <div class='mt-8 w-full'>
@@ -20,7 +20,7 @@
             :thumbs='{ swiper: thumbsSwiper }'
             class='h-[48rem] w-[48rem] object-contain'
           >
-            <swiper-slide v-for='image in product.images'>
+            <swiper-slide v-for='image in product.variants.map((it) => it.image)'>
               <img :src='image.url' alt='' class='w-full h-full' />
             </swiper-slide>
           </swiper>
@@ -37,7 +37,7 @@
             class=' object-cover mt-4 w-full'
             @swiper='setThumbsSwiper'
           >
-            <swiper-slide v-for='image in product.images'>
+            <swiper-slide v-for='image in product.variants.map((it) => it.image)'>
               <img :src='image.url' alt='' loading='lazy' />
             </swiper-slide>
           </swiper>
@@ -80,34 +80,34 @@
               :class="clsx(
                     'font-bold text-green-600',
                     {
-                        'text-3xl': product.currentPrice !== product.oldPrice,
-                        'text-xl': product.currentPrice === product.oldPrice,
+                        'text-3xl': v.currentPrice !== v.oldPrice,
+                        'text-xl': v.currentPrice === v.oldPrice,
                     }
                 )"
             >
-              {{ product.currentPrice }}$
+              {{ v.currentPrice }}$
             </span>
-            <span v-if='product.currentPrice !== product.oldPrice' class='font-light line-through ml-2'>
-              {{ product.oldPrice }}$
+            <span v-if='v.currentPrice !== v.oldPrice' class='font-light line-through ml-2'>
+              {{ v.oldPrice }}$
             </span>
           </div>
 
           <div v-if='isCriticalStock'>
-            <span class='text-red-600 text-sm mt-2'>Only {{ product.inventory }} left in stock</span>
+            <span class='text-red-600 text-sm mt-2'>Only {{ v.inventory }} left in stock</span>
           </div>
 
           <!-- Style -->
-          <div v-if='product.styles.length > 0'>
+          <div v-if='styles.length > 0'>
             <div class='mt-4'>Styles:</div>
             <div class='mt-2 grid grid-cols-3 gap-4'>
-              <div v-for='(style, idx) in product.styles'>
+              <div v-for='(style, idx) in styles'>
                 <button :class="clsx(
-                  'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
-                  {
-                      'bg-sky-600 text-white': styleIndex === idx,
-                      'hover:bg-sky-600 hover:text-white transition ease-in duration-200': styleIndex !== idx,
-                  }
-              )" @click='styleIndex = idx'>
+                            'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
+                            {
+                                'bg-sky-600 text-white': styleIndex === idx,
+                                'hover:bg-sky-600 hover:text-white transition ease-in duration-200': styleIndex !== idx,
+                            }
+                        )" @click='styleIndex = idx'>
                   {{ style.name }}
                 </button>
               </div>
@@ -115,17 +115,17 @@
           </div>
 
           <!-- Size -->
-          <div v-if='product.sizes.length > 0'>
+          <div v-if='sizes.length > 0'>
             <div class='mt-4'>Sizes:</div>
             <div class='mt-2 grid grid-cols-4 gap-4'>
-              <div v-for='(size, idx) in product.sizes'>
+              <div v-for='(size, idx) in sizes'>
                 <button :class="clsx(
-                  'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
-                  {
-                      'bg-sky-600 text-white': sizeIndex === idx,
-                      'hover:bg-sky-600 hover:text-white transition ease-in duration-200': sizeIndex !== idx,
-                  }
-              )" @click='sizeIndex = idx'>
+                            'border border-sky-600 rounded py-1 px-2 text-gray-600 col-span-1 w-full',
+                            {
+                                'bg-sky-600 text-white': sizeIndex === idx,
+                                'hover:bg-sky-600 hover:text-white transition ease-in duration-200': sizeIndex !== idx,
+                            }
+                        )" @click='sizeIndex = idx'>
                   {{ size.name }}
                 </button>
               </div>
@@ -144,11 +144,11 @@
                 Free Shipping
               </span>
               <span v-else>
-                Shipping: <span class='font-bold text-black'>{{ product.shippingPrice }}$</span>
+                Shipping: <span class='font-bold text-black'>{{ v.shippingPrice }}$</span>
               </span>
             </p>
             <p class='mt-2 text-gray-600 text-sm'>
-              Get the item in {{ product.shippingTime }} with {{ product.shippingType }} shipping
+              Get the item in {{ v.shippingTime }} with {{ v.shippingType }} shipping
             </p>
           </div>
 
@@ -202,6 +202,15 @@
         </p>
       </div>
 
+      <div class='mt-8'>
+        <h2 class='font-bold text-xl text-midnight'>
+          Serialized
+        </h2>
+        <pre class='mt-4 text-gray-600'>
+          {{ JSON.stringify(product, null, 2) }}
+        </pre>
+      </div>
+
       <ProductCarousel
         :items='featuredProducts as Product[]'
         title='Featured products'
@@ -216,7 +225,7 @@
 </template>
 
 <script lang='ts' setup>
-import { Category, Product, ProductDto, ProductsDto } from '~/utils/dto';
+import { Product, ProductDto, ProductsDto, ProductSize, ProductStyle, ProductVariant } from '~/utils/dto';
 import { BASE_URL } from '~/utils/api';
 import { TruckIcon, StarIcon as EmptyStarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as FilledStarIcon, MapPinIcon } from '@heroicons/vue/24/solid';
@@ -232,9 +241,9 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 
-
 // import required modules
 import { FreeMode, Navigation, Thumbs, Scrollbar } from 'swiper/modules';
+import { getBreadcrumbLinksFromCategories, getCategoriesFromProduct } from '~/utils/category';
 
 const thumbsSwiper = ref<SwiperClass | null>(null);
 const modules = [Navigation, Thumbs, FreeMode];
@@ -245,9 +254,6 @@ function setThumbsSwiper(swiper: SwiperClass) {
 }
 
 const route = useRoute();
-
-const styleIndex = ref(0);
-const sizeIndex = ref(0);
 
 const {
   data,
@@ -261,55 +267,29 @@ const featuredProducts = featuredProductsData.value?.data ?? [];
 
 const product: Product | undefined = data.value?.data;
 
-const categories = computed(() => {
-  const arr: Array<Pick<Category, 'id' | 'name'>> = [];
+const categories = computed(() => getCategoriesFromProduct(product));
 
-  if (!product) {
-    return arr;
-  }
-
-  arr.push({
-    id: product.category.id,
-    name: product.category.name,
-  });
-
-  let node = product.category.parent;
-
-  while (node) {
-    arr.push({
-      id: node.id,
-      name: node.name,
-    });
-
-    node = node.parent;
-  }
-
-  return arr.reverse();
-});
-
-const breadcrumbLinks = computed(() => {
-  return categories.value.map((category) => ({
-    name: category.name,
-    href: `/categories/${category.id}`,
-  }));
-});
+const breadcrumbLinks = computed(() => getBreadcrumbLinksFromCategories(categories.value));
 
 const productMessage = product ? useProductMessage(product) : '';
 
+// v is a shorthand for variant
+const v = ref<ProductVariant | null>(product?.defaultVariant || null);
+
 const isCriticalStock = computed(() => {
-  if (!product) {
+  if (!v || !v.value) {
     return false;
   }
 
-  return product.inventory < 50;
+  return v.value.inventory < 50;
 });
 
 const isFreeShipping = computed(() => {
-  if (!product) {
+  if (!v || !v.value) {
     return false;
   }
 
-  return product.shippingPrice === 0;
+  return v.value.shippingPrice === 0;
 });
 
 const reviewFilledStarsCount = computed(() => {
@@ -329,4 +309,38 @@ const reviewEmptyStarsCount = computed(() => {
 
   return 5 - reviewFilledStarsCount.value;
 });
+
+const styles = computed(() => {
+  if (!product) {
+    return [];
+  }
+
+  const styleIds = new Set<string>();
+
+  for (const variant of product.variants) {
+    styleIds.add(variant.style.id);
+  }
+
+  const idsArr = [...styleIds];
+
+  return (idsArr.map(id => product.variants.find(s => s.style.id === id)!)).map(it => it.style);
+});
+
+const sizes = computed(() => {
+  if (!product) {
+    return [];
+  }
+
+  const sizeIds = new Set<string>();
+
+  for (const variant of product.variants) {
+    sizeIds.add(variant.size.id);
+  }
+
+  const idsArr = [...sizeIds];
+
+  return (idsArr.map(id => product.variants.find(s => s.size.id === id)!)).map(it => it.size);
+});
+const styleIndex = ref(0);
+const sizeIndex = ref(0);
 </script>
