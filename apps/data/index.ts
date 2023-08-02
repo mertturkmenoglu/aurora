@@ -1,15 +1,15 @@
-import { getRandomBool, getRandomElementFromArray, getRandomFloat, getRandomInt } from './random.js';
-import { brands } from './brands.js';
-import { categories } from './categories.js';
-import { products } from './products.js';
-import { productStylesArr } from './styles.js';
-import { productSizesArr } from './sizes.js';
+import { getRandomBool, getRandomElementFromArray, getRandomFloat, getRandomInt } from './random';
+import { brands } from './brands';
+import { categories } from './categories';
+import { products } from './products';
+import { productStylesArr } from './styles';
+import { productSizesArr } from './sizes';
 import { faker } from '@faker-js/faker';
 
 const imageBase = 'https://aurora-dev-eu-central-product-images.s3.eu-central-1.amazonaws.com';
 const imageIds = products.map((it) => it.id);
 
-function createProductDto(i) {
+function createProductDto(i: number) {
   const variants = [];
   const variantCount = getRandomInt(3, 10);
 
