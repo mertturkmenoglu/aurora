@@ -95,8 +95,8 @@ func CreateProduct(c *gin.Context) {
 				OldPrice:     variant.OldPrice,
 				Inventory:    variant.Inventory,
 				Image: models.ProductImage{
-					ProductId: product.Id,
 					Url:       variant.Image.Url,
+					ProductId: product.Id,
 				},
 				ShippingPrice:  variant.ShippingPrice,
 				ShippingTime:   variant.ShippingTime,
@@ -106,6 +106,14 @@ func CreateProduct(c *gin.Context) {
 			}
 
 			res = tx.Create(productVariant)
+
+			if res.Error != nil {
+				return res.Error
+			}
+
+			productVariant.ImageId = productVariant.Image.Id
+
+			res = tx.Save(productVariant)
 
 			if res.Error != nil {
 				return res.Error
