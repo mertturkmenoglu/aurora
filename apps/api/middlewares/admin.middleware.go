@@ -44,7 +44,7 @@ func IsAdmin() gin.HandlerFunc {
 		}
 
 		var user models.User
-		result := db.Client.Find(&user, "email = ?", claims.Email)
+		result := db.Client.First(&user, "email = ?", claims.Email)
 
 		if result.Error != nil {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "Not authorized")
@@ -53,7 +53,7 @@ func IsAdmin() gin.HandlerFunc {
 		}
 
 		var admin models.Admin
-		result = db.Client.Find(&admin, "user_id = ?", user.Id)
+		result = db.Client.First(&admin, "user_id = ?", user.Id)
 
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
