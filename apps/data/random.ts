@@ -5,18 +5,18 @@
  * lower than max if max isn't an integer).
  * Using Math.round() will give you a non-uniform distribution!
  */
-export function getRandomInt(min, max) {
+export function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function getRandomFloat(min, max) {
+export function getRandomFloat(min: number, max: number): number {
   const number = Math.random() * (max - min + 1) + min;
   return parseFloat(number.toFixed(2));
 }
 
-export function shuffle(array) {
+export function shuffle<T>(array: T[]): T[] {
   let currentIndex = array.length, randomIndex;
 
   // While there remain elements to shuffle.
@@ -34,7 +34,7 @@ export function shuffle(array) {
   return array;
 }
 
-export function getRandomElementFromArray(arr) {
+export function getRandomElementFromArray<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
