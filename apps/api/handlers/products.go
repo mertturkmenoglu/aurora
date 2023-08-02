@@ -179,6 +179,9 @@ func GetProductById(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		First(&product, "ID = ?", id)
 
 	if res.Error != nil {
@@ -216,6 +219,9 @@ func GetProductsByCategory(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Limit(params.PageSize).
 		Offset(params.Offset).
 		Find(&products, "category_id IN ?", categoryIds).
@@ -238,6 +244,9 @@ func GetFeaturedProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Order("created_at desc").
 		Limit(25).
 		Find(&products, "is_featured = ?", true)
@@ -258,6 +267,9 @@ func GetNewProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Order("created_at desc").
 		Limit(25).
 		Find(&products, "is_new = ?", true)
@@ -278,6 +290,9 @@ func GetSaleProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Order("created_at desc").
 		Limit(25).
 		Find(&products, "is_on_sale = ?", true)
@@ -298,6 +313,9 @@ func GetPopularProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Order("created_at desc").
 		Limit(25).
 		Find(&products, "is_popular = ?", true)
@@ -327,6 +345,9 @@ func GetAllProducts(c *gin.Context) {
 		Preload(clause.Associations).
 		Preload("Category.Parent").
 		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
 		Limit(params.PageSize).
 		Offset(params.Offset).
 		Find(&products).
