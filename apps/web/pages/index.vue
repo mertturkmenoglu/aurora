@@ -48,17 +48,11 @@ const {
   data: newProductsData,
 } = await useFetch<ProductsDto>(`${BASE_URL}/products/new`);
 
-const {
-  data: freeShippingProductsData,
-} = await useFetch<ProductsDto>(`${BASE_URL}/products/free-shipping`);
-
 const featuredProducts = featuredProductsData.value?.data ?? [];
 
 const popularProducts = popularProductsData.value?.data ?? [];
 
 const newProducts = newProductsData.value?.data ?? [];
-
-const freeShippingProducts = freeShippingProductsData.value?.data ?? [];
 
 const products: Product[] = data.value?.data || [];
 </script>
