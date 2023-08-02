@@ -225,7 +225,7 @@
 </template>
 
 <script lang='ts' setup>
-import { Product, ProductDto, ProductsDto, ProductSize, ProductStyle, ProductVariant } from '~/utils/dto';
+import { Product, ProductDto, ProductsDto, ProductVariant } from '~/utils/dto';
 import { BASE_URL } from '~/utils/api';
 import { TruckIcon, StarIcon as EmptyStarIcon } from '@heroicons/vue/24/outline';
 import { StarIcon as FilledStarIcon, MapPinIcon } from '@heroicons/vue/24/solid';
