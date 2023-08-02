@@ -73,6 +73,7 @@ func Init() {
 func AutoMigrate() error {
 	return Client.AutoMigrate(
 		&models.Address{},
+		&models.Admin{},
 		&models.AdPreference{},
 		&models.Auth{},
 		&models.Brand{},
