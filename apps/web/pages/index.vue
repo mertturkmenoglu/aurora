@@ -4,6 +4,10 @@
   </Head>
 
   <div class='container space-y-16 mx-auto'>
+    <ClientOnly fallback-tag='span'>
+      <Banner />
+    </ClientOnly>
+
     <ProductCarousel
       :items='featuredProducts as Product[]'
       title='Featured products'
