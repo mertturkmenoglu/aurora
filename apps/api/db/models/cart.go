@@ -10,8 +10,10 @@ type Cart struct {
 
 type CartItem struct {
 	BaseModel
-	CartId    uuid.UUID `json:"cartId"`
-	ProductId uuid.UUID `json:"productId"`
-	Product   Product   `json:"product"`
-	Quantity  uint8     `json:"quantity"`
+	CartId           uuid.UUID      `json:"cartId"`
+	ProductId        uuid.UUID      `json:"productId"`
+	ProductVariantId uuid.UUID      `json:"productVariantId"`
+	ProductVariant   ProductVariant `json:"productVariant"`
+	Product          Product        `json:"product"`
+	Quantity         uint8          `json:"quantity"`
 }

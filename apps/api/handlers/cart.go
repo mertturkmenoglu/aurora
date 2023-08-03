@@ -55,6 +55,13 @@ func AddToCart(c *gin.Context) {
 	reqUser := c.MustGet("user").(jwt.Payload)
 	body := c.MustGet("body").(dto.AddToCartDto)
 
+	variantIdAsUUID, err := uuid.Parse(body.ProductVariantId)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, "Invalid product variant id")
+		return
+	}
+
 	// Get cart by user id
 	var cart models.Cart
 
@@ -81,13 +88,25 @@ func AddToCart(c *gin.Context) {
 		return
 	}
 
+	var productVariant models.ProductVariant
+
+	res = db.Client.
+		Preload(clause.Associations).
+		Where("id = ?", body.ProductVariantId).
+		First(&productVariant)
+
+	if res.Error != nil {
+		utils.HandleDatabaseError(c, res.Error)
+		return
+	}
+
 	// Check if product is already in cart
 	// By default, assume it's already in cart to prevent double adding
 	isProductAlreadyInCart := true
 	var cartItem models.CartItem
 
 	res = db.Client.
-		Where("cart_id = ? AND product_id = ?", cart.Id, product.Id).
+		Where("cart_id = ? AND product_id = ? AND product_variant_id = ?", cart.Id, product.Id, body.ProductVariantId).
 		First(&cartItem)
 
 	if res.Error != nil {
@@ -108,9 +127,10 @@ func AddToCart(c *gin.Context) {
 	}
 
 	newCartItem := models.CartItem{
-		CartId:    cart.Id,
-		ProductId: product.Id,
-		Quantity:  body.Quantity,
+		CartId:           cart.Id,
+		ProductId:        product.Id,
+		ProductVariantId: variantIdAsUUID,
+		Quantity:         body.Quantity,
 	}
 
 	res = db.Client.
