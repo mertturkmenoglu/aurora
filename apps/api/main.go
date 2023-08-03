@@ -3,6 +3,7 @@ package main
 import (
 	"aurora/db"
 	"aurora/handlers"
+	"aurora/services/tasks"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +32,9 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	go tasks.Init()
+	defer tasks.Close()
 
 	handlers.Bootstrap(router)
 

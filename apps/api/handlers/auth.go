@@ -5,9 +5,9 @@ import (
 	"aurora/db/models"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
-	"aurora/services/email"
 	"aurora/services/hash"
 	"aurora/services/jwt"
+	"aurora/services/tasks"
 	"aurora/services/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -186,15 +186,14 @@ func ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	// TODO: Delegate this to a worker
-	err = email.SendEmailWithTemplate(email.WithTemplateConfig[email.ForgotPasswordPayload]{
-		To:           body.Email,
-		TemplatePath: "templates/forgot-password.html",
-		Subject:      "Reset your password",
-		Data: email.ForgotPasswordPayload{
-			Code: sid,
-		},
-	})
+	t, err := tasks.NewEmailForgotPasswordTask(body.Email, sid)
+
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	_, err = tasks.Client.Enqueue(t)
 
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
