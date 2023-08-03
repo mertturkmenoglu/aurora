@@ -10,12 +10,12 @@ import (
 
 func main() {
 	router := gin.Default()
-	err := router.SetTrustedProxies(nil)
-	router.Use(middlewares.Cors())
 
-	if err != nil {
+	if err := router.SetTrustedProxies(nil); err != nil {
 		panic(err.Error())
 	}
+
+	router.Use(middlewares.Cors())
 
 	// Call only once to initialize the database connection
 	// Panics if the connection fails
@@ -23,9 +23,7 @@ func main() {
 
 	// Call only once to make sure the database schema is up-to-date
 	// All database entities are registered under this function
-	err = db.AutoMigrate()
-
-	if err != nil {
+	if err := db.AutoMigrate(); err != nil {
 		panic(err.Error())
 	}
 
@@ -40,9 +38,7 @@ func main() {
 	// Defines all routes.
 	handlers.Bootstrap(router)
 
-	err = router.Run(":5000")
-
-	if err != nil {
+	if err := router.Run(":5000"); err != nil {
 		panic(err.Error())
 	}
 }
