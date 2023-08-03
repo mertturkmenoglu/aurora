@@ -22,6 +22,7 @@
     "@headlessui/vue": "^1.7.14",
     "@heroicons/vue": "^2.0.18",
     "clsx": "^2.0.0",
+    "contentful": "^10.4.0",
     "swiper": "^10.0.4",
     "tailwind-merge": "^1.14.0"
   }
