@@ -133,3 +133,27 @@ export type CartItem = {
 }
 
 export type CartDto = Dto<Cart>
+
+export type CfBanner = {
+  title: string;
+  href: string;
+  enabledPages: string[];
+  image: {
+    fields: {
+      title: string;
+      description: string;
+      file: {
+        url: string;
+        details: {
+          size: number;
+          image: {
+            width: number;
+            height: number;
+          };
+        };
+        fileName: string;
+        contentType: string;
+      };
+    };
+  };
+}
