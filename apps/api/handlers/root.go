@@ -84,4 +84,7 @@ func Bootstrap(router *gin.Engine) {
 	app.DELETE("/cart/:id", middlewares.IsAuth(), RemoveFromCart)
 	app.DELETE("/cart", middlewares.IsAuth(), RemoveAllFromCart)
 	app.PUT("/cart/:id", middlewares.ParseBody[dto.UpdateCartItemDto](), middlewares.IsAuth(), UpdateCartItem)
+
+	// Aggregation routes
+	app.GET("/aggregations/home", GetHomeAggregation)
 }

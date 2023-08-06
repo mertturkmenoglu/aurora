@@ -3,6 +3,7 @@ package handlers
 import (
 	"aurora/db"
 	"aurora/db/models"
+	"aurora/db/queries"
 	"aurora/handlers/dto"
 	"aurora/services/cache"
 	"aurora/services/utils"
@@ -242,20 +243,10 @@ func GetProductsByCategory(c *gin.Context) {
 }
 
 func GetFeaturedProducts(c *gin.Context) {
-	var products []*models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Preload("DefaultVariant.Image").
-		Preload("DefaultVariant.ProductStyle").
-		Preload("DefaultVariant.ProductSize").
-		Order("created_at desc").
-		Limit(25).
-		Find(&products, "is_featured = ?", true)
+	products, err := queries.GetFeaturedProducts()
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
@@ -265,20 +256,10 @@ func GetFeaturedProducts(c *gin.Context) {
 }
 
 func GetNewProducts(c *gin.Context) {
-	var products []*models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Preload("DefaultVariant.Image").
-		Preload("DefaultVariant.ProductStyle").
-		Preload("DefaultVariant.ProductSize").
-		Order("created_at desc").
-		Limit(25).
-		Find(&products, "is_new = ?", true)
+	products, err := queries.GetNewProducts()
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
@@ -288,20 +269,10 @@ func GetNewProducts(c *gin.Context) {
 }
 
 func GetSaleProducts(c *gin.Context) {
-	var products []*models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Preload("DefaultVariant.Image").
-		Preload("DefaultVariant.ProductStyle").
-		Preload("DefaultVariant.ProductSize").
-		Order("created_at desc").
-		Limit(25).
-		Find(&products, "is_on_sale = ?", true)
+	products, err := queries.GetSaleProducts()
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
@@ -311,20 +282,10 @@ func GetSaleProducts(c *gin.Context) {
 }
 
 func GetPopularProducts(c *gin.Context) {
-	var products []*models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Preload("DefaultVariant.Image").
-		Preload("DefaultVariant.ProductStyle").
-		Preload("DefaultVariant.ProductSize").
-		Order("created_at desc").
-		Limit(25).
-		Find(&products, "is_popular = ?", true)
+	products, err := queries.GetPopularProducts()
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
