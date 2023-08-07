@@ -23,6 +23,9 @@ func getProductsByCondition(condition string) ([]*models.Product, error) {
 		Preload("DefaultVariant.Image").
 		Preload("DefaultVariant.ProductStyle").
 		Preload("DefaultVariant.ProductSize").
+		Preload("ProductVariants.Image").
+		Preload("ProductVariants.ProductStyle").
+		Preload("ProductVariants.ProductSize").
 		Order("created_at desc").
 		Limit(25).
 		Find(&products, condition, true)
