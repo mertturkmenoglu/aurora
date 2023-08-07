@@ -139,16 +139,10 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	var product *models.Product
+	product, err := queries.GetProductById(productId)
 
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		First(&product, "ID = ?", productId)
-
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 
@@ -160,7 +154,9 @@ func CreateProduct(c *gin.Context) {
 func GetProductById(c *gin.Context) {
 	id := c.Param("id")
 
-	if _, err := uuid.Parse(id); err != nil {
+	idAsUUID, err := uuid.Parse(id)
+
+	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, "id is malformed")
 		return
 	}
@@ -175,21 +171,11 @@ func GetProductById(c *gin.Context) {
 		return
 	}
 
-	var product *models.Product
-	res := db.Client.
-		Preload(clause.Associations).
-		Preload("Category.Parent").
-		Preload("Category.Parent.Parent").
-		Preload("DefaultVariant.Image").
-		Preload("DefaultVariant.ProductStyle").
-		Preload("DefaultVariant.ProductSize").
-		Preload("ProductVariants.Image").
-		Preload("ProductVariants.ProductStyle").
-		Preload("ProductVariants.ProductSize").
-		First(&product, "ID = ?", id)
+	// Cache miss
+	product, err := queries.GetProductById(idAsUUID)
 
-	if res.Error != nil {
-		utils.HandleDatabaseError(c, res.Error)
+	if err != nil {
+		utils.HandleDatabaseError(c, err)
 		return
 	}
 

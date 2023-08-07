@@ -3,6 +3,7 @@ package queries
 import (
 	"aurora/db"
 	"aurora/db/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 )
 
@@ -27,6 +28,28 @@ func getProductsByCondition(condition string) ([]*models.Product, error) {
 		Find(&products, condition, true)
 
 	return products, res.Error
+}
+
+func GetProductById(id uuid.UUID) (*models.Product, error) {
+	var product *models.Product
+
+	res := db.Client.
+		Preload(clause.Associations).
+		Preload("Category.Parent").
+		Preload("Category.Parent.Parent").
+		Preload("DefaultVariant.Image").
+		Preload("DefaultVariant.ProductStyle").
+		Preload("DefaultVariant.ProductSize").
+		Preload("ProductVariants.Image").
+		Preload("ProductVariants.ProductStyle").
+		Preload("ProductVariants.ProductSize").
+		First(&product, id)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return product, nil
 }
 
 func GetFeaturedProducts() ([]*models.Product, error) {
