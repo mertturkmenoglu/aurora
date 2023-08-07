@@ -12,6 +12,10 @@ const (
 	BrandKeyFormat          Key = "brand:%s"
 )
 
+const (
+	HomeAggregationKey = "home"
+)
+
 func GetFormattedKey(t Key, key string) string {
 	switch t {
 	case ProductKeyFormat:
