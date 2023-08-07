@@ -7,7 +7,6 @@ import (
 	"aurora/services/cache"
 	"aurora/services/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -31,15 +30,14 @@ func CreateBrand(c *gin.Context) {
 }
 
 func GetBrandById(c *gin.Context) {
-	id := c.Param("id")
+	id, err := utils.GetIdFromParams(c)
 
-	if _, err := uuid.Parse(id); err != nil {
-		utils.ErrorResponse(c, http.StatusBadRequest, "id is missing or malformed")
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	key := cache.GetFormattedKey(cache.BrandKeyFormat, id)
-
+	key := cache.GetFormattedKey(cache.BrandKeyFormat, id.String())
 	cacheResult, err := cache.HGet[models.Brand](key)
 
 	if cacheResult != nil && err == nil {
@@ -51,7 +49,7 @@ func GetBrandById(c *gin.Context) {
 
 	var brand models.Brand
 
-	res := db.Client.First(&brand, "id = ?", id)
+	res := db.Client.First(&brand, id)
 
 	if res.Error != nil {
 		utils.HandleDatabaseError(c, res.Error)
