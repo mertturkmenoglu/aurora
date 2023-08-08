@@ -3,9 +3,10 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"github.com/redis/go-redis/v9"
 	"os"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var client *redis.Client
@@ -18,13 +19,13 @@ func newRedisClient() *redis.Client {
 		panic("REDIS_URL is not set")
 	}
 
-	opt, err := redis.ParseURL(redisUrl)
+	options, err := redis.ParseURL(redisUrl)
 
 	if err != nil {
 		panic(err)
 	}
 
-	return redis.NewClient(opt)
+	return redis.NewClient(options)
 }
 
 func GetClient() *redis.Client {
