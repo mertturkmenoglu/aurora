@@ -157,3 +157,13 @@ export type CfBanner = {
     };
   };
 }
+
+export type HomeAggregation = {
+  featured: Product[];
+  new: Product[];
+  sale: Product[];
+  popular: Product[];
+};
+
+export type HomeAggregationDto = Dto<HomeAggregation>;
+

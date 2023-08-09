@@ -8,20 +8,13 @@
       <Banner />
     </ClientOnly>
 
-    <ProductCarousel
-      :items='featuredProducts as Product[]'
-      title='Featured products'
-    />
+    <ProductCarousel :items='featuredProducts as Product[]' title='Featured products' />
 
-    <ProductCarousel
-      :items='popularProducts as Product[]'
-      title='Popular products'
-    />
+    <ProductCarousel :items='popularProducts as Product[]' title='Popular products' />
 
-    <ProductCarousel
-      :items='newProducts as Product[]'
-      title='New products'
-    />
+    <ProductCarousel :items='newProducts as Product[]' title='New products' />
+
+    <ProductCarousel :items='saleProducts as Product[]' title='Sale products' />
 
   </div>
 
@@ -33,30 +26,19 @@
 </template>
 
 <script lang='ts' setup>
-import { ProductsDto, Product } from '~/utils/dto';
+import { ProductsDto, Product, HomeAggregationDto } from '~/utils/dto';
 import { BASE_URL } from '~/utils/api';
 
 const {
   data,
 } = await useFetch<ProductsDto>(`${BASE_URL}/products/all?page=1&pageSize=90`);
 
-const {
-  data: featuredProductsData,
-} = await useFetch<ProductsDto>(`${BASE_URL}/products/featured`);
+const { data: aggregatedData } = await useFetch<HomeAggregationDto>(`${BASE_URL}/aggregations/home`);
 
-const {
-  data: popularProductsData,
-} = await useFetch<ProductsDto>(`${BASE_URL}/products/popular`);
-
-const {
-  data: newProductsData,
-} = await useFetch<ProductsDto>(`${BASE_URL}/products/new`);
-
-const featuredProducts = featuredProductsData.value?.data ?? [];
-
-const popularProducts = popularProductsData.value?.data ?? [];
-
-const newProducts = newProductsData.value?.data ?? [];
+const featuredProducts = aggregatedData?.value?.data?.featured ?? [];
+const popularProducts = aggregatedData?.value?.data?.popular ?? [];
+const newProducts = aggregatedData?.value?.data?.new ?? [];
+const saleProducts = aggregatedData?.value?.data?.sale ?? [];
 
 const products: Product[] = data.value?.data || [];
 </script>
