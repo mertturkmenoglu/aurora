@@ -2,9 +2,10 @@ package jwt
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"time"
+
+	goJwt "github.com/golang-jwt/jwt/v5"
 )
 
 var (
@@ -21,7 +22,7 @@ type Payload struct {
 type Claims struct {
 	FullName string `json:"fullName"`
 	Email    string `json:"email"`
-	jwt.RegisteredClaims
+	goJwt.RegisteredClaims
 }
 
 func EncodeJwt(payload Payload) (string, error) {
@@ -34,17 +35,17 @@ func EncodeJwt(payload Payload) (string, error) {
 	claims := Claims{
 		payload.FullName,
 		payload.Email,
-		jwt.RegisteredClaims{
+		goJwt.RegisteredClaims{
 			// A usual scenario is to set the expiration time relative to the current time
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
+			ExpiresAt: goJwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+			IssuedAt:  goJwt.NewNumericDate(time.Now()),
+			NotBefore: goJwt.NewNumericDate(time.Now()),
 			Issuer:    "aurora-auth",
 			Subject:   payload.Email,
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := goJwt.NewWithClaims(goJwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString([]byte(secretKey))
 
 	if err != nil {
@@ -61,7 +62,7 @@ func DecodeJwt(tokenString string) (*Claims, error) {
 		panic("JWT secret key is undefined")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := goJwt.ParseWithClaims(tokenString, &Claims{}, func(token *goJwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
 
