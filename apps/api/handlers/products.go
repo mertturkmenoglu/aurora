@@ -8,11 +8,12 @@ import (
 	"aurora/services/cache"
 	"aurora/services/utils"
 	"aurora/services/utils/pagination"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"net/http"
 )
 
 func checkOnlyOneDefaultVariant(vars []dto.ProductVariantDto) bool {
@@ -23,12 +24,8 @@ func checkOnlyOneDefaultVariant(vars []dto.ProductVariantDto) bool {
 			counter++
 		}
 	}
-
-	if counter == 1 {
-		return true
-	}
-
-	return false
+	
+	return counter == 1
 }
 
 func CreateProduct(c *gin.Context) {

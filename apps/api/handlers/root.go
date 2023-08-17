@@ -3,9 +3,10 @@ package handlers
 import (
 	"aurora/handlers/dto"
 	"aurora/middlewares"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/ratelimit"
-	"time"
 )
 
 func Bootstrap(router *gin.Engine) {
