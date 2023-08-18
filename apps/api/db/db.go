@@ -3,10 +3,11 @@ package db
 import (
 	"aurora/db/models"
 	"fmt"
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
 )
 
 var Client *gorm.DB
@@ -60,6 +61,7 @@ func Init() {
 	logLevel := getLogLevelFromEnv()
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
 		Logger: logger.Default.LogMode(logLevel),
 	})
 
