@@ -20,6 +20,7 @@ to try different technologies. So we created this dummy project.
 ---
 # Running
 * Run `docker-compose up` inside the root folder.
+* Run `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";` for your database to setup `uuid_generate_v4` extension.
 * Run `yarn dev` inside `apps/web` folder.
 * Run `doppler run -- air` inside `apps/api` folder.
 # FAQ (Srsly)
