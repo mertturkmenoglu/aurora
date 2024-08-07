@@ -15,7 +15,7 @@
     "@nuxtjs/i18n": "^8.0.0-beta.13",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18",
-    "nuxt": "^3.5.2"
+    "nuxt": "^3.12.4"
   },
   "dependencies": {
     "@formkit/nuxt": "^0.17.4",
